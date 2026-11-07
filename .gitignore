@@ -1,0 +1,4 @@
+# Avoid private keys committed
+*.key.pem
+*.pem
+!*.pub.pem
