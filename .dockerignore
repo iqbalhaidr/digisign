@@ -1,0 +1,10 @@
+# Block everything
+*
+
+# Whitelist
+!src/
+!requirements.txt
+
+# Blacklist inside src/
+**/__pycache__/
+**/*.py[codz]

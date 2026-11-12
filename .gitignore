@@ -2,3 +2,6 @@
 *.key.pem
 *.pem
 !*.pub.pem
+
+__pycache__/
+*.py[codz]
