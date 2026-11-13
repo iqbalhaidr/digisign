@@ -1,24 +1,25 @@
 import json
+from typing import Any, NoReturn
 
-from errors import FormatError
+from src.errors import FormatError
 
 _BOM = b"\xef\xbb\xbf"
 
-def _reject_duplicates(pairs):
-    obj = {}
+def _reject_duplicates(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    obj: dict[str, Any] = {}
     for key, value in pairs:
         if key in obj:
             raise FormatError(f"duplicate key: {key!r}")
         obj[key] = value
     return obj
 
-def _reject_constant(name):
+def _reject_constant(name: str) -> NoReturn:
     raise FormatError(f"JSON constant not allowed: {name}")
 
-def _reject_float(name):
+def _reject_float(name: str) -> NoReturn:
     raise FormatError(f"Non-integer number not allowed: {name}")
 
-def _reject_null(value, where="root"):
+def _reject_null(value: object, where: str = "root") -> None:
     if value is None:
         raise FormatError(f"null value not allowed on {where}")
 
@@ -29,9 +30,9 @@ def _reject_null(value, where="root"):
         for index, item in enumerate(value):
             _reject_null(item, f"{where}[{index}]")
 
-def parse_strict(data, max_bytes=None):
+def parse_strict(data: bytes, max_bytes: int | None = None) -> Any:
     if max_bytes is not None and len(data) > max_bytes:
-        raise FormatError(f"{len(data)} sizes exceed the max {max_bytes} byte")
+        raise FormatError(f"{len(data)} bytes exceed the max {max_bytes} bytes")
 
     if data.startswith(_BOM):
         raise FormatError("BOM is not allowed")
@@ -55,7 +56,7 @@ def parse_strict(data, max_bytes=None):
 
     return value
 
-def expect_object(value, keys, where):
+def expect_object(value: object, keys: list[str], where: str) -> dict[str, Any]:
     if type(value) is not dict:
         raise FormatError(f"{where}: must be an object")
 
@@ -69,12 +70,12 @@ def expect_object(value, keys, where):
         )
     return value
 
-def expect_str(value, where):
+def expect_str(value: object, where: str) -> str:
     if type(value) is not str:
         raise FormatError(f"{where}: must be a string")
     return value
 
-def expect_int(value, where, minimum, maximum):
+def expect_int(value: object, where: str, minimum: int, maximum: int) -> int:
     if type(value) is not int:
         raise FormatError(f"{where}: must be an integer")
     if not minimum <= value <= maximum:

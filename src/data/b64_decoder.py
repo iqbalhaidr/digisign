@@ -1,9 +1,9 @@
 import base64
 import binascii
 
-from errors import FormatError
+from src.errors import FormatError
 
-def decode_b64_strict(value, where):
+def decode_b64_strict(value: object, where: str) -> bytes:
     if type(value) is not str:
         raise FormatError(f"{where}: must be a string")
 
@@ -11,8 +11,8 @@ def decode_b64_strict(value, where):
         raise FormatError(f"{where}: contains non-ASCII characters")
 
     try:
-        raw = base64.b64decode(value,validate=True)
-    except binascii.Errror as e:
+        raw = base64.b64decode(value, validate=True)
+    except binascii.Error as e:
         raise FormatError(f"{where}: invalid Base64 ({e})") from e
 
     if base64.b64encode(raw).decode("ascii") != value:
