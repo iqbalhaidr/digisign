@@ -1,7 +1,4 @@
-import contextlib
 import json
-import os
-import tempfile
 from dataclasses import dataclass, field
 
 from src.constants import HEX64_RE, PACKAGE_RE
@@ -16,6 +13,7 @@ from src.crypto import (
 )
 from src.data.strict_json import expect_object, expect_str, parse_strict
 from src.errors import FormatError, InvalidKeyError
+from src.fileio import write_atomic
 
 TRUST_SCHEMA = "minisign-trust/v1"
 
@@ -148,30 +146,4 @@ def load_trust_store(path: str) -> TrustStore:
         return parse_trust_store(f.read())
 
 def save_trust_store(store: TrustStore, path: str) -> None:
-    _write_atomic(path, serialize_trust_store(store))
-
-def _write_atomic(path: str, data: bytes) -> None:
-    directory = os.path.dirname(os.path.abspath(path))
-    fd, tmp_path = tempfile.mkstemp(prefix=".trust-", suffix=".tmp", dir=directory)
-    try:
-        with os.fdopen(fd, "wb") as f:
-            f.write(data)
-            f.flush()
-            os.fsync(f.fileno())
-        os.chmod(tmp_path, 0o644)
-        os.replace(tmp_path, path)
-    except BaseException:
-        with contextlib.suppress(OSError):
-            os.unlink(tmp_path)
-        raise
-    _fsync_directory(directory)
-
-def _fsync_directory(directory: str) -> None:
-    if os.name != "posix":
-        return
-    with contextlib.suppress(OSError):
-        fd = os.open(directory, os.O_RDONLY)
-        try:
-            os.fsync(fd)
-        finally:
-            os.close(fd)
+    write_atomic(path, serialize_trust_store(store))
