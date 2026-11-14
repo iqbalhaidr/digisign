@@ -1,4 +1,3 @@
-import hashlib
 import os
 import sys
 from typing import TextIO
@@ -8,12 +7,10 @@ from src.crypto import PrivateKey, compute_keyid, detect_profile, load_private_k
 from src.data.bundle import serialize_bundle
 from src.data.manifest import Artifact, Manifest, serialize_manifest
 from src.errors import FormatError, SignerError
-from src.fileio import write_new
+from src.fileio import hash_file, write_new
 
 EXIT_OK = 0
 EXIT_FAILURE = 2
-
-_CHUNK_SIZE = 1024 * 1024
 
 def sign_command(
     file_path: str,
@@ -43,7 +40,7 @@ def sign_command(
     return EXIT_OK
 
 def create_bundle(file_path: str, package: str, version: str, private_key: PrivateKey) -> tuple[Manifest, bytes]:
-    size, sha256 = hash_artifact(file_path)
+    size, sha256 = hash_file(file_path)
     manifest = Manifest(
         package=package,
         version=version,
@@ -54,15 +51,6 @@ def create_bundle(file_path: str, package: str, version: str, private_key: Priva
     manifest_bytes = serialize_manifest(manifest)
     signature = sign(private_key, manifest_bytes)
     return manifest, serialize_bundle(manifest_bytes, signature)
-
-def hash_artifact(path: str) -> tuple[int, str]:
-    digest = hashlib.sha256()
-    size = 0
-    with open(path, "rb") as f:
-        while chunk := f.read(_CHUNK_SIZE):
-            size += len(chunk)
-            digest.update(chunk)
-    return size, digest.hexdigest()
 
 def _validate_metadata(package: str, version: str) -> None:
     if PACKAGE_RE.fullmatch(package) is None:

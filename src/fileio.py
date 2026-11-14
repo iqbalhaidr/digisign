@@ -1,9 +1,21 @@
 import contextlib
+import hashlib
 import os
 import tempfile
 
 PUBLIC_FILE_MODE = 0o644
 PRIVATE_FILE_MODE = 0o600
+
+_CHUNK_SIZE = 1024 * 1024
+
+def hash_file(path: str) -> tuple[int, str]:
+    digest = hashlib.sha256()
+    size = 0
+    with open(path, "rb") as f:
+        while chunk := f.read(_CHUNK_SIZE):
+            size += len(chunk)
+            digest.update(chunk)
+    return size, digest.hexdigest()
 
 def write_new(path: str, data: bytes, mode: int = PUBLIC_FILE_MODE) -> None:
     flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_BINARY", 0)

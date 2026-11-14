@@ -1,4 +1,3 @@
-import hashlib
 import os
 import sys
 from typing import TextIO
@@ -9,6 +8,7 @@ from src.crypto import verify as verify_signature
 from src.data.bundle import parse_bundle
 from src.data.manifest import Manifest, parse_manifest
 from src.errors import FormatError
+from src.fileio import hash_file
 from src.trust import parse_trust_store
 from src.verify.result import (
     ARTIFACT_MISMATCH,
@@ -22,8 +22,6 @@ from src.verify.result import (
     VerifyResult,
 )
 
-_CHUNK_SIZE = 1024 * 1024
-
 def _result(status: str, message: str, manifest: Manifest | None = None) -> VerifyResult:
     if manifest is None:
         return VerifyResult(status, message)
@@ -34,15 +32,6 @@ def _result(status: str, message: str, manifest: Manifest | None = None) -> Veri
 def _read_file(path: str, limit: int | None = None) -> bytes:
     with open(path, "rb") as f:
         return f.read() if limit is None else f.read(limit)
-
-def _hash_file(path: str) -> tuple[int, str]:
-    digest = hashlib.sha256()
-    size = 0
-    with open(path, "rb") as f:
-        while chunk := f.read(_CHUNK_SIZE):
-            size += len(chunk)
-            digest.update(chunk)
-    return size, digest.hexdigest()
 
 def verify_release(
     file_path: str,
@@ -99,7 +88,7 @@ def verify_release(
 
     # 7. ARTIFACT_MISMATCH
     try:
-        size, sha256 = _hash_file(file_path)
+        size, sha256 = hash_file(file_path)
     except OSError as e:
         return _result(INPUT_ERROR, f"cannot read artifact: {e}", manifest)
     if size != manifest.artifact.size:
