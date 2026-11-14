@@ -1,0 +1,1 @@
+Ini merupakan folder yang menyimpan private dan public keys untuk demo pengujian pipeline CI/CD (C01-C05). Private key disimpan di secrets Github Actions sebagai Repository Secrets. Untuk melihat pasangan kunci private key hubungi iqbal.

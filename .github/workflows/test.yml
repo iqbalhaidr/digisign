@@ -1,0 +1,476 @@
+# Uji Integrasi Pipeline CI/CD
+name: test
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/test.yml'
+
+env:
+  IMAGE: ghcr.io/${{ github.repository }}:1.0.0@sha256:046d973f54c64d776252465c3a4c0da0c75bd2d32f1e20965a2c3fb4c8a0077a
+
+jobs:
+  # =========================================================================
+  c01:
+    name: "C01"
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - algo: rsa-pss-sha256
+            secret_name: CI_SIGNING_KEY_RSA
+          - algo: ecdsa-p256-sha256
+            secret_name: CI_SIGNING_KEY_ECDSA
+          - algo: ed25519
+            secret_name: CI_SIGNING_KEY_ED25519
+    env:
+      FOLDER: c01_${{ matrix.algo }}
+    steps:
+      - name: C01 - Checkout repository
+        uses: actions/checkout@v7
+
+      - name: C01 - Setup folder for artifacts
+        run: |
+          set -eu
+          : "${FOLDER:?mandatory}"
+          mkdir -p $FOLDER $FOLDER/dist $FOLDER/out
+
+      - name: C01 - Pull tool image
+        run: |
+          set -eu
+          : "${IMAGE:?mandatory}"
+          docker pull "$IMAGE"
+
+      - name: C01 - Build artifact
+        run: |
+          set -eu
+          zip -j $FOLDER/dist/contoh-app.zip test/ci/contoh-app.txt
+
+      - name: C01 - Sign manifest
+        env:
+          SIGNING_KEY: ${{ secrets[matrix.secret_name] }}
+        run: |
+          set -eu
+          : "${SIGNING_KEY:?mandatory}"
+
+          # Berkas kunci privat sementara dari secret CI/CD
+          SIGNING_KEY_FILE="$(mktemp)"
+          trap 'rm -f "$SIGNING_KEY_FILE"' 0
+          printf "%s\n" "$SIGNING_KEY" > "$SIGNING_KEY_FILE"
+          chmod 400 "$SIGNING_KEY_FILE"
+
+          # Sign
+          docker run --rm --network none \
+            --user "$(id -u):$(id -g)" \
+            -v "$PWD/$FOLDER/dist:/input:ro" \
+            -v "$PWD/$FOLDER/out:/output" \
+            -v "$SIGNING_KEY_FILE:/run/signing.key.pem:ro" \
+            "$IMAGE" sign --file /input/contoh-app.zip \
+            --package contoh-app --version 1.0.0 \
+            --key /run/signing.key.pem --out /output/rilis.json
+
+      - name: C01 - Verify release
+        run: |
+          set -eu
+
+          docker run --rm --network none \
+            --user "$(id -u):$(id -g)" \
+            -v "$PWD/$FOLDER/dist:/input:ro" \
+            -v "$PWD/$FOLDER/out:/output:ro" \
+            -v "$PWD/ci/trust.json:/trust.json:ro" \
+            "$IMAGE" verify --file /input/contoh-app.zip \
+            --bundle /output/rilis.json --trust-store /trust.json \
+            --package contoh-app --version 1.0.0 --json \
+            > $FOLDER/verification.json
+
+      - name: C01 - Publish or deploy
+        run: |
+          set -eu
+
+          # Simulasi deploy dengan pembuatan berkas penanda
+          echo "[C01] DEPLOYED: contoh-app v1.0.0 (${{ matrix.algo }})" > $FOLDER/out/deploy.marker
+
+      - name: C01 - Upload evidence
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ env.FOLDER }}
+          path: ${{ env.FOLDER }}
+
+  # =========================================================================
+  c02:
+    name: "C02"
+    runs-on: ubuntu-latest
+    env:
+      FOLDER: c02
+    steps:
+      - name: C02 - Checkout repository
+        uses: actions/checkout@v7
+
+      - name: C02 - Setup folder for artifacts
+        run: |
+          set -eu
+          : "${FOLDER:?mandatory}"
+          mkdir -p "$FOLDER" "$FOLDER/dist" "$FOLDER/out"
+
+      - name: C02 - Pull tool image
+        run: |
+          set -eu
+          : "${IMAGE:?mandatory}"
+          docker pull "$IMAGE"
+
+      - name: C02 - Build artifact
+        run: |
+          set -eu
+          zip -j $FOLDER/dist/contoh-app.zip test/ci/contoh-app.txt
+
+      - name: C02 - Sign manifest
+        env:
+          SIGNING_KEY: ${{ secrets.CI_SIGNING_KEY_ED25519 }}
+        run: |
+          set -eu
+          : "${SIGNING_KEY:?mandatory}"
+
+          # Berkas kunci privat sementara dari secret CI/CD
+          SIGNING_KEY_FILE="$(mktemp)"
+          trap 'rm -f "$SIGNING_KEY_FILE"' 0
+          printf "%s\n" "$SIGNING_KEY" > "$SIGNING_KEY_FILE"
+          chmod 400 "$SIGNING_KEY_FILE"
+
+          # Sign artefak asli
+          docker run --rm --network none \
+            --user "$(id -u):$(id -g)" \
+            -v "$PWD/$FOLDER/dist:/input:ro" \
+            -v "$PWD/$FOLDER/out:/output" \
+            -v "$SIGNING_KEY_FILE:/run/signing.key.pem:ro" \
+            "$IMAGE" sign --file /input/contoh-app.zip \
+            --package contoh-app --version 1.0.0 \
+            --key /run/signing.key.pem --out /output/rilis.json
+
+      - name: C02 - Tamper artifact
+        run: |
+          set -eu
+          # Ubah tepat 1 byte pertama pada artefak tanpa mengubah ukuran & nama berkas
+          python3 -c '
+          with open("c02/dist/contoh-app.zip", "r+b") as f:
+              b = f.read(1)
+              f.seek(0)
+              f.write(bytes([b[0] ^ 0xFF]))
+          '
+
+      - name: C02 - Verify release
+        run: |
+          set -u
+
+          docker run --rm --network none \
+            --user "$(id -u):$(id -g)" \
+            -v "$PWD/$FOLDER/dist:/input:ro" \
+            -v "$PWD/$FOLDER/out:/output:ro" \
+            -v "$PWD/ci/trust.json:/trust.json:ro" \
+            "$IMAGE" verify --file /input/contoh-app.zip \
+            --bundle /output/rilis.json --trust-store /trust.json \
+            --package contoh-app --version 1.0.0 --json \
+            > "$FOLDER/verification.json"
+
+      - name: C02 - Publish or deploy
+        run: |
+          set -eu
+
+          # Simulasi deploy dengan pembuatan berkas penanda
+          echo "[C02] DEPLOYED: contoh-app v1.0.0 (ed25519)" > $FOLDER/out/deploy.marker
+
+      - name: C02 - Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ env.FOLDER }}
+          path: ${{ env.FOLDER }}
+
+  # =========================================================================
+  c03:
+    name: "C03"
+    runs-on: ubuntu-latest
+    env:
+      FOLDER: c03
+    steps:
+      - name: C03 - Checkout repository
+        uses: actions/checkout@v7
+
+      - name: C03 - Setup folder for artifacts
+        run: |
+          set -eu
+          : "${FOLDER:?mandatory}"
+          mkdir -p "$FOLDER" "$FOLDER/dist" "$FOLDER/out"
+
+      - name: C03 - Pull tool image
+        run: |
+          set -eu
+          : "${IMAGE:?mandatory}"
+          docker pull "$IMAGE"
+
+      - name: C03 - Build artifact
+        run: |
+          set -eu
+          zip -j "$FOLDER/dist/contoh-app.zip" test/ci/contoh-app.txt
+
+      - name: C03 - Sign manifest
+        env:
+          SIGNING_KEY: ${{ secrets.CI_SIGNING_KEY_ED25519 }}
+        run: |
+          set -eu
+          : "${SIGNING_KEY:?mandatory}"
+
+          # Berkas kunci privat sementara dari secret CI/CD
+          SIGNING_KEY_FILE="$(mktemp)"
+          trap 'rm -f "$SIGNING_KEY_FILE"' 0
+          printf "%s\n" "$SIGNING_KEY" > "$SIGNING_KEY_FILE"
+          chmod 400 "$SIGNING_KEY_FILE"
+
+          # Sign
+          docker run --rm --network none \
+            --user "$(id -u):$(id -g)" \
+            -v "$PWD/$FOLDER/dist:/input:ro" \
+            -v "$PWD/$FOLDER/out:/output" \
+            -v "$SIGNING_KEY_FILE:/run/signing.key.pem:ro" \
+            "$IMAGE" sign --file /input/contoh-app.zip \
+            --package contoh-app --version 1.0.0 \
+            --key /run/signing.key.pem --out /output/rilis.json
+
+      - name: C03 - Verify release
+        run: |
+          set -u
+
+          # Trust store kosong
+          docker run --rm --network none \
+            --user "$(id -u):$(id -g)" \
+            -v "$PWD/$FOLDER/dist:/input:ro" \
+            -v "$PWD/$FOLDER/out:/output:ro" \
+            -v "$PWD/ci/trust_empty.json:/trust.json:ro" \
+            "$IMAGE" verify --file /input/contoh-app.zip \
+            --bundle /output/rilis.json --trust-store /trust.json \
+            --package contoh-app --version 1.0.0 --json \
+            > "$FOLDER/verification.json"
+
+      - name: C03 - Publish or deploy
+        run: |
+          set -eu
+          # Simulasi deploy dengan pembuatan berkas penanda (otomatis dilewati jika verify gagal)
+          echo "[C03] DEPLOYED: contoh-app v1.0.0 (ed25519)" > "$FOLDER/out/deploy.marker"
+
+      - name: C03 - Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ env.FOLDER }}
+          path: ${{ env.FOLDER }}
+  
+  # =========================================================================
+  
+  c04:
+    name: "C04"
+    runs-on: ubuntu-latest
+    env:
+      FOLDER: c04
+    steps:
+      - name: C04 - Checkout repository
+        uses: actions/checkout@v7
+
+      - name: C04 - Setup folder for artifacts
+        run: |
+          set -eu
+          : "${FOLDER:?mandatory}"
+          mkdir -p "$FOLDER" "$FOLDER/dist" "$FOLDER/out"
+
+      - name: C04 - Pull tool image
+        run: |
+          set -eu
+          : "${IMAGE:?mandatory}"
+          docker pull "$IMAGE"
+
+      - name: C04 - Build artifact
+        run: |
+          set -eu
+          zip -j "$FOLDER/dist/contoh-app.zip" test/ci/contoh-app.txt
+
+      - name: C04 - Sign manifest
+        env:
+          SIGNING_KEY: ${{ secrets.CI_SIGNING_KEY_ED25519 }}
+        run: |
+          set -eu
+          : "${SIGNING_KEY:?mandatory}"
+
+          # Berkas kunci privat sementara dari secret CI/CD
+          SIGNING_KEY_FILE="$(mktemp)"
+          trap 'rm -f "$SIGNING_KEY_FILE"' 0
+          printf "%s\n" "$SIGNING_KEY" > "$SIGNING_KEY_FILE"
+          chmod 400 "$SIGNING_KEY_FILE"
+
+          # Sign 
+          docker run --rm --network none \
+            --user "$(id -u):$(id -g)" \
+            -v "$PWD/$FOLDER/dist:/input:ro" \
+            -v "$PWD/$FOLDER/out:/output" \
+            -v "$SIGNING_KEY_FILE:/run/signing.key.pem:ro" \
+            "$IMAGE" sign --file /input/contoh-app.zip \
+            --package contoh-app --version 1.0.0 \
+            --key /run/signing.key.pem --out /output/rilis.json
+
+      - name: C04 - Verify release
+        run: |
+          set -u
+
+          # Path artefak yang berkasnya tidak tersedia
+          docker run --rm --network none \
+            --user "$(id -u):$(id -g)" \
+            -v "$PWD/$FOLDER/dist:/input:ro" \
+            -v "$PWD/$FOLDER/out:/output:ro" \
+            -v "$PWD/ci/trust.json:/trust.json:ro" \
+            "$IMAGE" verify --file /input/contoh-app-v2.zip \
+            --bundle /output/rilis.json --trust-store /trust.json \
+            --package contoh-app --version 1.0.0 --json \
+            > "$FOLDER/verification.json"
+
+      - name: C04 - Publish or deploy
+        run: |
+          set -eu
+          # Simulasi deploy dengan pembuatan berkas penanda (otomatis dilewati jika verify gagal)
+          echo "[C04] DEPLOYED: contoh-app v1.0.0 (ed25519)" > "$FOLDER/out/deploy.marker"
+
+      - name: C04 - Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ env.FOLDER }}
+          path: ${{ env.FOLDER }}
+
+  # =========================================================================
+
+  c05:
+    name: "C05"
+    runs-on: ubuntu-latest
+    env:
+      FOLDER: c05
+    steps:
+      - name: C05 - Checkout repository
+        uses: actions/checkout@v7
+
+      - name: C05 - Setup folder for artifacts
+        run: |
+          set -eu
+          : "${FOLDER:?mandatory}"
+          mkdir -p "$FOLDER" "$FOLDER/dist" "$FOLDER/out"
+
+      - name: C05 - Pull tool image
+        run: |
+          set -eu
+          : "${IMAGE:?mandatory}"
+          docker pull "$IMAGE"
+
+      - name: C05 - Build artifact
+        run: |
+          set -eu
+          zip -j "$FOLDER/dist/contoh-app.zip" test/ci/contoh-app.txt
+
+      - name: C05 - Test --help, --version
+        run: |
+          set -eu
+          docker run --rm --network none --user "$(id -u):$(id -g)" "$IMAGE" --version > "$FOLDER/out/c05_version.txt"
+          docker run --rm --network none --user "$(id -u):$(id -g)" "$IMAGE" --help > "$FOLDER/out/c05_help.txt"
+
+      - name: C05 - Test keygen, trust add, trust list
+        run: |
+          set -eu
+
+          # Trust keygen
+          docker run --rm --network none \
+            --user "$(id -u):$(id -g)" \
+            -v "$PWD/$FOLDER/out:/work" \
+            "$IMAGE" keygen --algorithm ed25519 --out /work/c05_ed25519
+
+          chmod 400 "$FOLDER/out/c05_ed25519.key.pem"
+
+          # Trust add
+          docker run --rm --network none \
+            --user "$(id -u):$(id -g)" \
+            -v "$PWD/$FOLDER/out:/work" \
+            "$IMAGE" trust add --key /work/c05_ed25519.pub.pem \
+            --package contoh-app --store /work/c05_trust.json
+
+          # Trust list (before remove)
+          docker run --rm --network none \
+            --user "$(id -u):$(id -g)" \
+            -v "$PWD/$FOLDER/out:/work:ro" \
+            "$IMAGE" trust list --store /work/c05_trust.json \
+            > "$FOLDER/out/c05_trust_list_before.txt"
+
+      - name: C05 - Sign manifest
+        run: |
+          set -eu
+          trap 'rm -f "$FOLDER/out/c05_ed25519.key.pem"' 0
+
+          docker run --rm --network none \
+            --user "$(id -u):$(id -g)" \
+            -v "$PWD/$FOLDER/dist:/input:ro" \
+            -v "$PWD/$FOLDER/out:/output" \
+            -v "$PWD/$FOLDER/out/c05_ed25519.key.pem:/run/signing.key.pem:ro" \
+            "$IMAGE" sign --file /input/contoh-app.zip \
+            --package contoh-app --version 1.0.0 \
+            --key /run/signing.key.pem --out /output/rilis.json
+
+      - name: C05 - Verify release
+        run: |
+          set -eu
+          docker run --rm --network none \
+            --user "$(id -u):$(id -g)" \
+            -v "$PWD/$FOLDER/dist:/input:ro" \
+            -v "$PWD/$FOLDER/out:/output:ro" \
+            "$IMAGE" verify --file /input/contoh-app.zip \
+            --bundle /output/rilis.json --trust-store /output/c05_trust.json \
+            --package contoh-app --version 1.0.0 --json \
+            > "$FOLDER/verification.json"
+
+      - name: C05 - File ownership
+        run: |
+          set -eu
+
+          # File ownership
+          echo "Runner UID:GID            : $(id -u):$(id -g)"
+          echo "rilis.json UID:GID        : $(stat -c '%u:%g' "$FOLDER/out/rilis.json")"
+          echo "verification.json UID:GID : $(stat -c '%u:%g' "$FOLDER/verification.json")"
+
+      - name: C05 - Test trust remove
+        run: |
+          set -eu
+          KEY_ID="$(python3 -c '
+          import json, os
+          path = os.path.join(os.environ["FOLDER"], "out", "c05_trust.json")
+          with open(path) as f:
+              data = json.load(f)
+          print(data["keys"][0]["key_id"])
+          ')"
+
+          docker run --rm --network none \
+            --user "$(id -u):$(id -g)" \
+            -v "$PWD/$FOLDER/out:/work" \
+            "$IMAGE" trust remove --key-id "$KEY_ID" --store /work/c05_trust.json
+
+          # Trust list (after remove)
+          docker run --rm --network none \
+            --user "$(id -u):$(id -g)" \
+            -v "$PWD/$FOLDER/out:/work:ro" \
+            "$IMAGE" trust list --store /work/c05_trust.json \
+            > "$FOLDER/out/c05_trust_list_after.txt"
+      
+      - name: C05 - Publish or deploy
+        run: |
+          set -eu
+          # Simulasi deploy dengan pembuatan berkas penanda
+          echo "[C05] DEPLOYED: contoh-app v1.0.0 (ed25519)" > "$FOLDER/out/deploy.marker"
+
+      - name: C05 - Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ env.FOLDER }}
+          path: ${{ env.FOLDER }}

@@ -23,8 +23,8 @@ Lorem ipsum dolor sit amet. [Tata cara menjalankan program di luar runner CI/CD.
 
 ## Lainnya
 * Tautan image public: Lorem ipsum dolor sit amet
-* Tag versi: Lorem ipsum dolor sit amet
-* Digest image: Lorem ipsum dolor sit amet
+* Tag versi: **1.0.0**
+* Digest image: **sha256:046d973f54c64d776252465c3a4c0da0c75bd2d32f1e20965a2c3fb4c8a0077a**
 * Konfigurasi workflow: Lorem ipsum dolor sit amet [konfigurasi workflow pemakai pada Bagian 2.9.]
 
 ## Kontributor
