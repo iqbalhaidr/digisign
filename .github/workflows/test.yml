@@ -79,7 +79,7 @@ jobs:
             --user "$(id -u):$(id -g)" \
             -v "$PWD/$FOLDER/dist:/input:ro" \
             -v "$PWD/$FOLDER/out:/output:ro" \
-            -v "$PWD/ci/trust.json:/trust.json:ro" \
+            -v "$PWD/test/ci/trust.json:/trust.json:ro" \
             "$IMAGE" verify --file /input/contoh-app.zip \
             --bundle /output/rilis.json --trust-store /trust.json \
             --package contoh-app --version 1.0.0 --json \
@@ -167,7 +167,7 @@ jobs:
             --user "$(id -u):$(id -g)" \
             -v "$PWD/$FOLDER/dist:/input:ro" \
             -v "$PWD/$FOLDER/out:/output:ro" \
-            -v "$PWD/ci/trust.json:/trust.json:ro" \
+            -v "$PWD/test/ci/trust.json:/trust.json:ro" \
             "$IMAGE" verify --file /input/contoh-app.zip \
             --bundle /output/rilis.json --trust-store /trust.json \
             --package contoh-app --version 1.0.0 --json \
@@ -246,7 +246,7 @@ jobs:
             --user "$(id -u):$(id -g)" \
             -v "$PWD/$FOLDER/dist:/input:ro" \
             -v "$PWD/$FOLDER/out:/output:ro" \
-            -v "$PWD/ci/trust_empty.json:/trust.json:ro" \
+            -v "$PWD/test/ci/trust_empty.json:/trust.json:ro" \
             "$IMAGE" verify --file /input/contoh-app.zip \
             --bundle /output/rilis.json --trust-store /trust.json \
             --package contoh-app --version 1.0.0 --json \
@@ -325,7 +325,7 @@ jobs:
             --user "$(id -u):$(id -g)" \
             -v "$PWD/$FOLDER/dist:/input:ro" \
             -v "$PWD/$FOLDER/out:/output:ro" \
-            -v "$PWD/ci/trust.json:/trust.json:ro" \
+            -v "$PWD/test/ci/trust.json:/trust.json:ro" \
             "$IMAGE" verify --file /input/contoh-app-v2.zip \
             --bundle /output/rilis.json --trust-store /trust.json \
             --package contoh-app --version 1.0.0 --json \
