@@ -453,7 +453,7 @@ jobs:
           docker run --rm --network none \
             --user "$(id -u):$(id -g)" \
             -v "$PWD/$FOLDER/out:/work" \
-            "$IMAGE" trust remove --key-id "$KEY_ID" --store /work/c05_trust.json
+            "$IMAGE" trust remove --keyid "$KEY_ID" --store /work/c05_trust.json
 
           # Trust list (after remove)
           docker run --rm --network none \
