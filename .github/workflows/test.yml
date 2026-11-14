@@ -447,7 +447,7 @@ jobs:
           path = os.path.join(os.environ["FOLDER"], "out", "c05_trust.json")
           with open(path) as f:
               data = json.load(f)
-          print(data["keys"][0]["key_id"])
+          print(data["keys"][0]["keyid"])
           ')"
 
           docker run --rm --network none \
