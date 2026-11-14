@@ -1,12 +1,11 @@
-import base64
 import hashlib
-import json
 import os
 import sys
 from typing import TextIO
 
-from src.constants import BUNDLE_SCHEMA, MAX_BUNDLE_BYTES, PACKAGE_RE, VERSION_RE
+from src.constants import PACKAGE_RE, VERSION_RE
 from src.crypto import PrivateKey, compute_keyid, detect_profile, load_private_key_pem, sign
+from src.data.bundle import serialize_bundle
 from src.data.manifest import Artifact, Manifest, serialize_manifest
 from src.errors import FormatError, SignerError
 from src.fileio import write_new
@@ -64,17 +63,6 @@ def hash_artifact(path: str) -> tuple[int, str]:
             size += len(chunk)
             digest.update(chunk)
     return size, digest.hexdigest()
-
-def serialize_bundle(manifest_bytes: bytes, signature: bytes) -> bytes:
-    document = {
-        "schema": BUNDLE_SCHEMA,
-        "manifest_b64": base64.b64encode(manifest_bytes).decode("ascii"),
-        "signature_b64": base64.b64encode(signature).decode("ascii"),
-    }
-    data = (json.dumps(document, indent=2, ensure_ascii=True) + "\n").encode("ascii")
-    if len(data) > MAX_BUNDLE_BYTES:
-        raise FormatError(f"bundle: exceeds {MAX_BUNDLE_BYTES} bytes")
-    return data
 
 def _validate_metadata(package: str, version: str) -> None:
     if PACKAGE_RE.fullmatch(package) is None:
