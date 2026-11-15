@@ -1,0 +1,70 @@
+# Log perintah (test/interop/results/rsa-pss-sha256/commands.log)
+
+$ openssl.EXE genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:3072 -out test/interop/results/rsa-pss-sha256/openssl.key.pem
+exit: 0
+[stderr]
+....+.++++++++++++++++++++++++++++++++++++++++++*.+.................+...+....+.....+....+.....+....+...+..+.+..++++++++++++++++++++++++++++++++++++++++++*..+....................+...............+....+..+............+......+.........+......+......+.+........+......+.+...+..+..................+......+....+..............+...+....+..............+.......+.........+...+...........+......+......+.......+.....+..........+..+.............+..+...............+...+.............+........+....+......+.....+.....................+......+...+............+.........+.+..+...+....+...+...............+.....................+......+.....+...+.+.....+.+........+.........................+............+.....+...+......+.+...............+........+......+.+........+.............+...............+...+..+.........+..................................+++++
+.....+..........+...+..+.............+...+..+.............+..+.......++++++++++++++++++++++++++++++++++++++++++*.+..........+.................+...+....+........+...+.........+...+.......+.....+....+..+.......++++++++++++++++++++++++++++++++++++++++++*.....+...+...........+...+.+..+..........+...+..+.........+.+..+...............+.+.....+....+.......................+.........+...+.......+........+.+.....+....+...+.....+...+.........+......+...............+......+.+.....+...+.+...................................+...+.+......+...+...+..+.......+......+..+.......+.....+.+...+..+...+.........+............+.....................+.............+............+........+.......+..................+..+..........+........+............+..........+..+...+....+...+......+.........+.....+.+.....+....+...+...+.....+................+...........+++++
+
+$ openssl.EXE pkey -in test/interop/results/rsa-pss-sha256/openssl.key.pem -pubout -out test/interop/results/rsa-pss-sha256/openssl.pub.pem
+exit: 0
+
+$ openssl.EXE pkey -in test/interop/results/rsa-pss-sha256/openssl.key.pem -pubout -outform DER -out test/interop/results/rsa-pss-sha256/openssl.pub.der
+exit: 0
+
+$ openssl.EXE dgst -sha256 -r test/interop/results/rsa-pss-sha256/openssl.pub.der
+exit: 0
+[stdout]
+59dab9d5951ce37910c582cb11882f6afd0a39e460c26e70dd0c7601bf40fe11 *test/interop/results/rsa-pss-sha256/openssl.pub.der
+
+$ digisign trust add --key test/interop/results/rsa-pss-sha256/openssl.pub.pem --package contoh-app --store test/interop/results/rsa-pss-sha256/trust.json
+exit: 0
+[stdout]
+keyid:     59dab9d5951ce37910c582cb11882f6afd0a39e460c26e70dd0c7601bf40fe11
+algorithm: rsa-pss-sha256
+packages:  contoh-app
+[stderr]
+trust store updated
+
+$ digisign keygen --algorithm rsa-pss-sha256 --out test/interop/results/rsa-pss-sha256/program
+exit: 0
+[stdout]
+keyid:       b784f299f706549cf02ce2df31b4ed4a015ca4dc4f133209227593d1fb14971a
+algorithm:   rsa-pss-sha256
+private key: test/interop/results/rsa-pss-sha256/program.key.pem
+public key:  test/interop/results/rsa-pss-sha256/program.pub.pem
+
+$ openssl.EXE pkey -in test/interop/results/rsa-pss-sha256/program.key.pem -noout
+exit: 0
+
+$ openssl.EXE pkey -pubin -in test/interop/results/rsa-pss-sha256/program.pub.pem -outform DER -out test/interop/results/rsa-pss-sha256/program.pub.der
+exit: 0
+
+$ openssl.EXE dgst -sha256 -r test/interop/results/rsa-pss-sha256/program.pub.der
+exit: 0
+[stdout]
+b784f299f706549cf02ce2df31b4ed4a015ca4dc4f133209227593d1fb14971a *test/interop/results/rsa-pss-sha256/program.pub.der
+
+$ digisign sign --file test/scenarios/inputs/contoh-app.bin --package contoh-app --version 1.0.0 --key test/interop/results/rsa-pss-sha256/openssl.key.pem --out test/interop/results/rsa-pss-sha256/bundle-program.json
+exit: 0
+[stdout]
+bundle:    test/interop/results/rsa-pss-sha256/bundle-program.json
+keyid:     59dab9d5951ce37910c582cb11882f6afd0a39e460c26e70dd0c7601bf40fe11
+algorithm: rsa-pss-sha256
+artifact:  contoh-app.bin (4096 bytes)
+
+$ openssl.EXE dgst -sha256 -sigopt rsa_padding_mode:pss -sigopt rsa_pss_saltlen:32 -sigopt rsa_mgf1_md:sha256 -verify test/interop/results/rsa-pss-sha256/openssl.pub.pem -signature test/interop/results/rsa-pss-sha256/sig-program.bin test/interop/results/rsa-pss-sha256/manifest.bin
+exit: 0
+[stdout]
+Verified OK
+
+$ openssl.EXE dgst -sha256 -sigopt rsa_padding_mode:pss -sigopt rsa_pss_saltlen:32 -sigopt rsa_mgf1_md:sha256 -sign test/interop/results/rsa-pss-sha256/openssl.key.pem -out test/interop/results/rsa-pss-sha256/sig-openssl.bin test/interop/results/rsa-pss-sha256/manifest.bin
+exit: 0
+
+# test/interop/results/rsa-pss-sha256/bundle-openssl.json: manifest yang sama, tanda tangan dari OpenSSL
+
+$ digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/interop/results/rsa-pss-sha256/bundle-openssl.json --trust-store test/interop/results/rsa-pss-sha256/trust.json --package contoh-app --version 1.0.0 --json
+exit: 0
+[stdout]
+{"valid": true, "status": "OK", "message": "Signature and artifact are valid.", "algorithm": "rsa-pss-sha256", "keyid": "59dab9d5951ce37910c582cb11882f6afd0a39e460c26e70dd0c7601bf40fe11", "package": "contoh-app", "version": "1.0.0"}
+
