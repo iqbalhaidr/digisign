@@ -35,7 +35,7 @@ jobs:
         run: |
           set -eu
           : "${FOLDER:?mandatory}"
-          mkdir -p $FOLDER $FOLDER/dist $FOLDER/out
+          mkdir -p "$FOLDER"
 
       - name: C01 - Pull tool image
         run: |
@@ -46,7 +46,7 @@ jobs:
       - name: C01 - Build artifact
         run: |
           set -eu
-          zip -j $FOLDER/dist/contoh-app.zip test/ci/contoh-app.txt
+          zip -j "$FOLDER/contoh-app.zip" test/ci/contoh-app.txt
 
       - name: C01 - Sign manifest
         env:
@@ -64,12 +64,11 @@ jobs:
           # Sign
           docker run --rm --network none \
             --user "$(id -u):$(id -g)" \
-            -v "$PWD/$FOLDER/dist:/input:ro" \
-            -v "$PWD/$FOLDER/out:/output" \
+            -v "$PWD/$FOLDER:/work" \
             -v "$SIGNING_KEY_FILE:/run/signing.key.pem:ro" \
-            "$IMAGE" sign --file /input/contoh-app.zip \
+            "$IMAGE" sign --file /work/contoh-app.zip \
             --package contoh-app --version 1.0.0 \
-            --key /run/signing.key.pem --out /output/rilis.json
+            --key /run/signing.key.pem --out /work/rilis.json
 
       - name: C01 - Verify release
         run: |
@@ -77,20 +76,19 @@ jobs:
 
           docker run --rm --network none \
             --user "$(id -u):$(id -g)" \
-            -v "$PWD/$FOLDER/dist:/input:ro" \
-            -v "$PWD/$FOLDER/out:/output:ro" \
+            -v "$PWD/$FOLDER:/work:ro" \
             -v "$PWD/test/ci/trust.json:/trust.json:ro" \
-            "$IMAGE" verify --file /input/contoh-app.zip \
-            --bundle /output/rilis.json --trust-store /trust.json \
+            "$IMAGE" verify --file /work/contoh-app.zip \
+            --bundle /work/rilis.json --trust-store /trust.json \
             --package contoh-app --version 1.0.0 --json \
-            > $FOLDER/verification.json
+            > "$FOLDER/verification.json"
 
       - name: C01 - Publish or deploy
         run: |
           set -eu
 
           # Simulasi deploy dengan pembuatan berkas penanda
-          echo "[C01] DEPLOYED: contoh-app v1.0.0 (${{ matrix.algo }})" > $FOLDER/out/deploy.marker
+          echo "[C01] DEPLOYED: contoh-app v1.0.0 (${{ matrix.algo }})" > "$FOLDER/deploy.marker"
 
       - name: C01 - Upload evidence
         uses: actions/upload-artifact@v7
@@ -112,7 +110,7 @@ jobs:
         run: |
           set -eu
           : "${FOLDER:?mandatory}"
-          mkdir -p "$FOLDER" "$FOLDER/dist" "$FOLDER/out"
+          mkdir -p "$FOLDER"
 
       - name: C02 - Pull tool image
         run: |
@@ -123,7 +121,7 @@ jobs:
       - name: C02 - Build artifact
         run: |
           set -eu
-          zip -j $FOLDER/dist/contoh-app.zip test/ci/contoh-app.txt
+          zip -j "$FOLDER/contoh-app.zip" test/ci/contoh-app.txt
 
       - name: C02 - Sign manifest
         env:
@@ -141,19 +139,18 @@ jobs:
           # Sign artefak asli
           docker run --rm --network none \
             --user "$(id -u):$(id -g)" \
-            -v "$PWD/$FOLDER/dist:/input:ro" \
-            -v "$PWD/$FOLDER/out:/output" \
+            -v "$PWD/$FOLDER:/work" \
             -v "$SIGNING_KEY_FILE:/run/signing.key.pem:ro" \
-            "$IMAGE" sign --file /input/contoh-app.zip \
+            "$IMAGE" sign --file /work/contoh-app.zip \
             --package contoh-app --version 1.0.0 \
-            --key /run/signing.key.pem --out /output/rilis.json
+            --key /run/signing.key.pem --out /work/rilis.json
 
       - name: C02 - Tamper artifact
         run: |
           set -eu
           # Ubah tepat 1 byte pertama pada artefak tanpa mengubah ukuran & nama berkas
           python3 -c '
-          with open("c02/dist/contoh-app.zip", "r+b") as f:
+          with open("c02/contoh-app.zip", "r+b") as f:
               b = f.read(1)
               f.seek(0)
               f.write(bytes([b[0] ^ 0xFF]))
@@ -165,11 +162,10 @@ jobs:
 
           docker run --rm --network none \
             --user "$(id -u):$(id -g)" \
-            -v "$PWD/$FOLDER/dist:/input:ro" \
-            -v "$PWD/$FOLDER/out:/output:ro" \
+            -v "$PWD/$FOLDER:/work:ro" \
             -v "$PWD/test/ci/trust.json:/trust.json:ro" \
-            "$IMAGE" verify --file /input/contoh-app.zip \
-            --bundle /output/rilis.json --trust-store /trust.json \
+            "$IMAGE" verify --file /work/contoh-app.zip \
+            --bundle /work/rilis.json --trust-store /trust.json \
             --package contoh-app --version 1.0.0 --json \
             > "$FOLDER/verification.json"
 
@@ -178,7 +174,7 @@ jobs:
           set -eu
 
           # Simulasi deploy dengan pembuatan berkas penanda
-          echo "[C02] DEPLOYED: contoh-app v1.0.0 (ed25519)" > $FOLDER/out/deploy.marker
+          echo "[C02] DEPLOYED: contoh-app v1.0.0 (ed25519)" > "$FOLDER/deploy.marker"
 
       - name: C02 - Upload evidence
         if: always()
@@ -201,7 +197,7 @@ jobs:
         run: |
           set -eu
           : "${FOLDER:?mandatory}"
-          mkdir -p "$FOLDER" "$FOLDER/dist" "$FOLDER/out"
+          mkdir -p "$FOLDER"
 
       - name: C03 - Pull tool image
         run: |
@@ -212,7 +208,7 @@ jobs:
       - name: C03 - Build artifact
         run: |
           set -eu
-          zip -j "$FOLDER/dist/contoh-app.zip" test/ci/contoh-app.txt
+          zip -j "$FOLDER/contoh-app.zip" test/ci/contoh-app.txt
 
       - name: C03 - Sign manifest
         env:
@@ -230,12 +226,11 @@ jobs:
           # Sign
           docker run --rm --network none \
             --user "$(id -u):$(id -g)" \
-            -v "$PWD/$FOLDER/dist:/input:ro" \
-            -v "$PWD/$FOLDER/out:/output" \
+            -v "$PWD/$FOLDER:/work" \
             -v "$SIGNING_KEY_FILE:/run/signing.key.pem:ro" \
-            "$IMAGE" sign --file /input/contoh-app.zip \
+            "$IMAGE" sign --file /work/contoh-app.zip \
             --package contoh-app --version 1.0.0 \
-            --key /run/signing.key.pem --out /output/rilis.json
+            --key /run/signing.key.pem --out /work/rilis.json
 
       - name: C03 - Verify release
         run: |
@@ -244,11 +239,10 @@ jobs:
           # Trust store kosong
           docker run --rm --network none \
             --user "$(id -u):$(id -g)" \
-            -v "$PWD/$FOLDER/dist:/input:ro" \
-            -v "$PWD/$FOLDER/out:/output:ro" \
+            -v "$PWD/$FOLDER:/work:ro" \
             -v "$PWD/test/ci/trust_empty.json:/trust.json:ro" \
-            "$IMAGE" verify --file /input/contoh-app.zip \
-            --bundle /output/rilis.json --trust-store /trust.json \
+            "$IMAGE" verify --file /work/contoh-app.zip \
+            --bundle /work/rilis.json --trust-store /trust.json \
             --package contoh-app --version 1.0.0 --json \
             > "$FOLDER/verification.json"
 
@@ -256,7 +250,7 @@ jobs:
         run: |
           set -eu
           # Simulasi deploy dengan pembuatan berkas penanda (otomatis dilewati jika verify gagal)
-          echo "[C03] DEPLOYED: contoh-app v1.0.0 (ed25519)" > "$FOLDER/out/deploy.marker"
+          echo "[C03] DEPLOYED: contoh-app v1.0.0 (ed25519)" > "$FOLDER/deploy.marker"
 
       - name: C03 - Upload evidence
         if: always()
@@ -280,7 +274,7 @@ jobs:
         run: |
           set -eu
           : "${FOLDER:?mandatory}"
-          mkdir -p "$FOLDER" "$FOLDER/dist" "$FOLDER/out"
+          mkdir -p "$FOLDER"
 
       - name: C04 - Pull tool image
         run: |
@@ -291,7 +285,7 @@ jobs:
       - name: C04 - Build artifact
         run: |
           set -eu
-          zip -j "$FOLDER/dist/contoh-app.zip" test/ci/contoh-app.txt
+          zip -j "$FOLDER/contoh-app.zip" test/ci/contoh-app.txt
 
       - name: C04 - Sign manifest
         env:
@@ -309,12 +303,11 @@ jobs:
           # Sign 
           docker run --rm --network none \
             --user "$(id -u):$(id -g)" \
-            -v "$PWD/$FOLDER/dist:/input:ro" \
-            -v "$PWD/$FOLDER/out:/output" \
+            -v "$PWD/$FOLDER:/work" \
             -v "$SIGNING_KEY_FILE:/run/signing.key.pem:ro" \
-            "$IMAGE" sign --file /input/contoh-app.zip \
+            "$IMAGE" sign --file /work/contoh-app.zip \
             --package contoh-app --version 1.0.0 \
-            --key /run/signing.key.pem --out /output/rilis.json
+            --key /run/signing.key.pem --out /work/rilis.json
 
       - name: C04 - Verify release
         run: |
@@ -323,11 +316,10 @@ jobs:
           # Path artefak yang berkasnya tidak tersedia
           docker run --rm --network none \
             --user "$(id -u):$(id -g)" \
-            -v "$PWD/$FOLDER/dist:/input:ro" \
-            -v "$PWD/$FOLDER/out:/output:ro" \
+            -v "$PWD/$FOLDER:/work:ro" \
             -v "$PWD/test/ci/trust.json:/trust.json:ro" \
-            "$IMAGE" verify --file /input/contoh-app-v2.zip \
-            --bundle /output/rilis.json --trust-store /trust.json \
+            "$IMAGE" verify --file /work/contoh-app-v2.zip \
+            --bundle /work/rilis.json --trust-store /trust.json \
             --package contoh-app --version 1.0.0 --json \
             > "$FOLDER/verification.json"
 
@@ -335,7 +327,7 @@ jobs:
         run: |
           set -eu
           # Simulasi deploy dengan pembuatan berkas penanda (otomatis dilewati jika verify gagal)
-          echo "[C04] DEPLOYED: contoh-app v1.0.0 (ed25519)" > "$FOLDER/out/deploy.marker"
+          echo "[C04] DEPLOYED: contoh-app v1.0.0 (ed25519)" > "$FOLDER/deploy.marker"
 
       - name: C04 - Upload evidence
         if: always()
@@ -359,7 +351,7 @@ jobs:
         run: |
           set -eu
           : "${FOLDER:?mandatory}"
-          mkdir -p "$FOLDER" "$FOLDER/dist" "$FOLDER/out"
+          mkdir -p "$FOLDER"
 
       - name: C05 - Pull tool image
         run: |
@@ -370,13 +362,13 @@ jobs:
       - name: C05 - Build artifact
         run: |
           set -eu
-          zip -j "$FOLDER/dist/contoh-app.zip" test/ci/contoh-app.txt
+          zip -j "$FOLDER/contoh-app.zip" test/ci/contoh-app.txt
 
       - name: C05 - Test --help, --version
         run: |
           set -eu
-          docker run --rm --network none --user "$(id -u):$(id -g)" "$IMAGE" --version > "$FOLDER/out/c05_version.txt"
-          docker run --rm --network none --user "$(id -u):$(id -g)" "$IMAGE" --help > "$FOLDER/out/c05_help.txt"
+          docker run --rm --network none --user "$(id -u):$(id -g)" "$IMAGE" --version > "$FOLDER/version.txt"
+          docker run --rm --network none --user "$(id -u):$(id -g)" "$IMAGE" --help > "$FOLDER/help.txt"
 
       - name: C05 - Test keygen, trust add, trust list
         run: |
@@ -385,48 +377,46 @@ jobs:
           # Trust keygen
           docker run --rm --network none \
             --user "$(id -u):$(id -g)" \
-            -v "$PWD/$FOLDER/out:/work" \
-            "$IMAGE" keygen --algorithm ed25519 --out /work/c05_ed25519
+            -v "$PWD/$FOLDER:/work" \
+            "$IMAGE" keygen --algorithm ed25519 --out /work/ed25519
 
-          chmod 400 "$FOLDER/out/c05_ed25519.key.pem"
+          chmod 400 "$FOLDER/ed25519.key.pem"
 
           # Trust add
           docker run --rm --network none \
             --user "$(id -u):$(id -g)" \
-            -v "$PWD/$FOLDER/out:/work" \
-            "$IMAGE" trust add --key /work/c05_ed25519.pub.pem \
-            --package contoh-app --store /work/c05_trust.json
+            -v "$PWD/$FOLDER:/work" \
+            "$IMAGE" trust add --key /work/ed25519.pub.pem \
+            --package contoh-app --store /work/trust.json
 
           # Trust list (before remove)
           docker run --rm --network none \
             --user "$(id -u):$(id -g)" \
-            -v "$PWD/$FOLDER/out:/work:ro" \
-            "$IMAGE" trust list --store /work/c05_trust.json \
-            > "$FOLDER/out/c05_trust_list_before.txt"
+            -v "$PWD/$FOLDER:/work:ro" \
+            "$IMAGE" trust list --store /work/trust.json \
+            > "$FOLDER/trust_list_before.txt"
 
       - name: C05 - Sign manifest
         run: |
           set -eu
-          trap 'rm -f "$FOLDER/out/c05_ed25519.key.pem"' 0
+          trap 'rm -f "$FOLDER/ed25519.key.pem"' 0
 
           docker run --rm --network none \
             --user "$(id -u):$(id -g)" \
-            -v "$PWD/$FOLDER/dist:/input:ro" \
-            -v "$PWD/$FOLDER/out:/output" \
-            -v "$PWD/$FOLDER/out/c05_ed25519.key.pem:/run/signing.key.pem:ro" \
-            "$IMAGE" sign --file /input/contoh-app.zip \
+            -v "$PWD/$FOLDER:/work" \
+            -v "$PWD/$FOLDER/ed25519.key.pem:/run/signing.key.pem:ro" \
+            "$IMAGE" sign --file /work/contoh-app.zip \
             --package contoh-app --version 1.0.0 \
-            --key /run/signing.key.pem --out /output/rilis.json
+            --key /run/signing.key.pem --out /work/rilis.json
 
       - name: C05 - Verify release
         run: |
           set -eu
           docker run --rm --network none \
             --user "$(id -u):$(id -g)" \
-            -v "$PWD/$FOLDER/dist:/input:ro" \
-            -v "$PWD/$FOLDER/out:/output:ro" \
-            "$IMAGE" verify --file /input/contoh-app.zip \
-            --bundle /output/rilis.json --trust-store /output/c05_trust.json \
+            -v "$PWD/$FOLDER:/work:ro" \
+            "$IMAGE" verify --file /work/contoh-app.zip \
+            --bundle /work/rilis.json --trust-store /work/trust.json \
             --package contoh-app --version 1.0.0 --json \
             > "$FOLDER/verification.json"
 
@@ -436,7 +426,7 @@ jobs:
 
           # File ownership
           echo "Runner UID:GID            : $(id -u):$(id -g)"
-          echo "rilis.json UID:GID        : $(stat -c '%u:%g' "$FOLDER/out/rilis.json")"
+          echo "rilis.json UID:GID        : $(stat -c '%u:%g' "$FOLDER/rilis.json")"
           echo "verification.json UID:GID : $(stat -c '%u:%g' "$FOLDER/verification.json")"
 
       - name: C05 - Test trust remove
@@ -444,7 +434,7 @@ jobs:
           set -eu
           KEY_ID="$(python3 -c '
           import json, os
-          path = os.path.join(os.environ["FOLDER"], "out", "c05_trust.json")
+          path = os.path.join(os.environ["FOLDER"], "trust.json")
           with open(path) as f:
               data = json.load(f)
           print(data["keys"][0]["keyid"])
@@ -452,21 +442,21 @@ jobs:
 
           docker run --rm --network none \
             --user "$(id -u):$(id -g)" \
-            -v "$PWD/$FOLDER/out:/work" \
-            "$IMAGE" trust remove --keyid "$KEY_ID" --store /work/c05_trust.json
+            -v "$PWD/$FOLDER:/work" \
+            "$IMAGE" trust remove --keyid "$KEY_ID" --store /work/trust.json
 
           # Trust list (after remove)
           docker run --rm --network none \
             --user "$(id -u):$(id -g)" \
-            -v "$PWD/$FOLDER/out:/work:ro" \
-            "$IMAGE" trust list --store /work/c05_trust.json \
-            > "$FOLDER/out/c05_trust_list_after.txt"
+            -v "$PWD/$FOLDER:/work:ro" \
+            "$IMAGE" trust list --store /work/trust.json \
+            > "$FOLDER/trust_list_after.txt"
       
       - name: C05 - Publish or deploy
         run: |
           set -eu
           # Simulasi deploy dengan pembuatan berkas penanda
-          echo "[C05] DEPLOYED: contoh-app v1.0.0 (ed25519)" > "$FOLDER/out/deploy.marker"
+          echo "[C05] DEPLOYED: contoh-app v1.0.0 (ed25519)" > "$FOLDER/deploy.marker"
 
       - name: C05 - Upload evidence
         if: always()
