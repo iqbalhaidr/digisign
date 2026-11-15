@@ -1,0 +1,38 @@
+# Log perintah (test/scenarios/results/U11/commands.log)
+
+$ digisign trust add --key test/scenarios/keys/ed25519.pub.pem --package contoh-app --store test/scenarios/results/U11/trust.json
+exit: 0
+[stdout]
+keyid:     00c1eb44d9d6388356d85574f23314798a57107d100e9d89f71c441dc6282c27
+algorithm: ed25519
+packages:  contoh-app
+[stderr]
+trust store updated
+
+# test/scenarios/results/U11/bundle-ed448.json: dirakit skrip, manifest = {"schema":"minisign-manifest/v1","package":"contoh-app","version":"1.0.0","algorithm":"ed448","keyid":"00c1eb44d9d6388356d85574f23314798a57107d100e9d89f71c441dc6282c27","artifact":{"name":"contoh-app.bin","size":4096,"sha256":"c8f5d0341d54d951a71b136e6e2afcb14d11ed8489a7ae126a8fee0df6ecf193"}}
+
+$ digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U11/bundle-ed448.json --trust-store test/scenarios/results/U11/trust.json --package contoh-app --version 1.0.0 --json
+exit: 1
+[stdout]
+{"valid": false, "status": "UNSUPPORTED_ALGORITHM", "message": "unsupported algorithm: 'ed448'", "algorithm": "ed448", "keyid": "00c1eb44d9d6388356d85574f23314798a57107d100e9d89f71c441dc6282c27", "package": "contoh-app", "version": "1.0.0"}
+[stderr]
+UNSUPPORTED_ALGORITHM: unsupported algorithm: 'ed448'
+
+# test/scenarios/results/U11/bundle-rsa-pkcs1-sha256.json: dirakit skrip, manifest = {"schema":"minisign-manifest/v1","package":"contoh-app","version":"1.0.0","algorithm":"rsa-pkcs1-sha256","keyid":"00c1eb44d9d6388356d85574f23314798a57107d100e9d89f71c441dc6282c27","artifact":{"name":"contoh-app.bin","size":4096,"sha256":"c8f5d0341d54d951a71b136e6e2afcb14d11ed8489a7ae126a8fee0df6ecf193"}}
+
+$ digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U11/bundle-rsa-pkcs1-sha256.json --trust-store test/scenarios/results/U11/trust.json --package contoh-app --version 1.0.0 --json
+exit: 1
+[stdout]
+{"valid": false, "status": "UNSUPPORTED_ALGORITHM", "message": "unsupported algorithm: 'rsa-pkcs1-sha256'", "algorithm": "rsa-pkcs1-sha256", "keyid": "00c1eb44d9d6388356d85574f23314798a57107d100e9d89f71c441dc6282c27", "package": "contoh-app", "version": "1.0.0"}
+[stderr]
+UNSUPPORTED_ALGORITHM: unsupported algorithm: 'rsa-pkcs1-sha256'
+
+# test/scenarios/results/U11/bundle-ED25519.json: dirakit skrip, manifest = {"schema":"minisign-manifest/v1","package":"contoh-app","version":"1.0.0","algorithm":"ED25519","keyid":"00c1eb44d9d6388356d85574f23314798a57107d100e9d89f71c441dc6282c27","artifact":{"name":"contoh-app.bin","size":4096,"sha256":"c8f5d0341d54d951a71b136e6e2afcb14d11ed8489a7ae126a8fee0df6ecf193"}}
+
+$ digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U11/bundle-ED25519.json --trust-store test/scenarios/results/U11/trust.json --package contoh-app --version 1.0.0 --json
+exit: 1
+[stdout]
+{"valid": false, "status": "UNSUPPORTED_ALGORITHM", "message": "unsupported algorithm: 'ED25519'", "algorithm": "ED25519", "keyid": "00c1eb44d9d6388356d85574f23314798a57107d100e9d89f71c441dc6282c27", "package": "contoh-app", "version": "1.0.0"}
+[stderr]
+UNSUPPORTED_ALGORITHM: unsupported algorithm: 'ED25519'
+
