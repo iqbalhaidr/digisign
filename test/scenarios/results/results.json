@@ -1,0 +1,308 @@
+{
+  "environment": {
+    "Waktu (UTC)": "2026-11-15 11:34:06",
+    "OS": "Windows-11-10.0.26200-SP0",
+    "Python": "3.12.10",
+    "cryptography": "50.0.1",
+    "OpenSSL CLI": "OpenSSL 3.2.2 4 Jun 2024 (Library: OpenSSL 3.2.2 4 Jun 2024)"
+  },
+  "cases": [
+    {
+      "id": "U01",
+      "profile": "rsa-pss-sha256",
+      "description": "Berkas teks `contoh-app.txt` (40 byte), kunci dan metadata sesuai",
+      "expected": "OK (exit 0)",
+      "actual": "OK (exit 0)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U01"
+    },
+    {
+      "id": "U01",
+      "profile": "rsa-pss-sha256",
+      "description": "Berkas biner `contoh-app.bin` (4096 byte), kunci dan metadata sesuai",
+      "expected": "OK (exit 0)",
+      "actual": "OK (exit 0)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U01"
+    },
+    {
+      "id": "U01",
+      "profile": "rsa-pss-sha256",
+      "description": "Berkas kosong `contoh-app-empty.txt` (0 byte), kunci dan metadata sesuai",
+      "expected": "OK (exit 0)",
+      "actual": "OK (exit 0)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U01"
+    },
+    {
+      "id": "U01",
+      "profile": "ecdsa-p256-sha256",
+      "description": "Berkas teks `contoh-app.txt` (40 byte), kunci dan metadata sesuai",
+      "expected": "OK (exit 0)",
+      "actual": "OK (exit 0)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U01"
+    },
+    {
+      "id": "U01",
+      "profile": "ecdsa-p256-sha256",
+      "description": "Berkas biner `contoh-app.bin` (4096 byte), kunci dan metadata sesuai",
+      "expected": "OK (exit 0)",
+      "actual": "OK (exit 0)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U01"
+    },
+    {
+      "id": "U01",
+      "profile": "ecdsa-p256-sha256",
+      "description": "Berkas kosong `contoh-app-empty.txt` (0 byte), kunci dan metadata sesuai",
+      "expected": "OK (exit 0)",
+      "actual": "OK (exit 0)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U01"
+    },
+    {
+      "id": "U01",
+      "profile": "ed25519",
+      "description": "Berkas teks `contoh-app.txt` (40 byte), kunci dan metadata sesuai",
+      "expected": "OK (exit 0)",
+      "actual": "OK (exit 0)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U01"
+    },
+    {
+      "id": "U01",
+      "profile": "ed25519",
+      "description": "Berkas biner `contoh-app.bin` (4096 byte), kunci dan metadata sesuai",
+      "expected": "OK (exit 0)",
+      "actual": "OK (exit 0)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U01"
+    },
+    {
+      "id": "U01",
+      "profile": "ed25519",
+      "description": "Berkas kosong `contoh-app-empty.txt` (0 byte), kunci dan metadata sesuai",
+      "expected": "OK (exit 0)",
+      "actual": "OK (exit 0)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U01"
+    },
+    {
+      "id": "U05",
+      "profile": "rsa-pss-sha256",
+      "description": "Kontrol: bundle asli",
+      "expected": "OK (exit 0)",
+      "actual": "OK (exit 0)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U05"
+    },
+    {
+      "id": "U05",
+      "profile": "rsa-pss-sha256",
+      "description": "Bit 0 byte ke-192 tanda tangan dibalik (panjang dan Base64 tetap valid)",
+      "expected": "INVALID_SIGNATURE (exit 1)",
+      "actual": "INVALID_SIGNATURE (exit 1)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U05"
+    },
+    {
+      "id": "U05",
+      "profile": "ecdsa-p256-sha256",
+      "description": "Kontrol: bundle asli",
+      "expected": "OK (exit 0)",
+      "actual": "OK (exit 0)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U05"
+    },
+    {
+      "id": "U05",
+      "profile": "ecdsa-p256-sha256",
+      "description": "Bit 0 byte ke-32 tanda tangan dibalik (panjang dan Base64 tetap valid)",
+      "expected": "INVALID_SIGNATURE (exit 1)",
+      "actual": "INVALID_SIGNATURE (exit 1)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U05"
+    },
+    {
+      "id": "U05",
+      "profile": "ed25519",
+      "description": "Kontrol: bundle asli",
+      "expected": "OK (exit 0)",
+      "actual": "OK (exit 0)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U05"
+    },
+    {
+      "id": "U05",
+      "profile": "ed25519",
+      "description": "Bit 0 byte ke-32 tanda tangan dibalik (panjang dan Base64 tetap valid)",
+      "expected": "INVALID_SIGNATURE (exit 1)",
+      "actual": "INVALID_SIGNATURE (exit 1)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U05"
+    },
+    {
+      "id": "U06",
+      "profile": "ed25519",
+      "description": "Trust store kosong",
+      "expected": "KEY_NOT_TRUSTED (exit 1)",
+      "actual": "KEY_NOT_TRUSTED (exit 1)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U06"
+    },
+    {
+      "id": "U06",
+      "profile": "ed25519",
+      "description": "Kontrol: kunci penerbit ada di trust store",
+      "expected": "OK (exit 0)",
+      "actual": "OK (exit 0)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U06"
+    },
+    {
+      "id": "U06",
+      "profile": "ed25519",
+      "description": "Kunci penerbit dihapus dengan `trust remove`",
+      "expected": "KEY_NOT_TRUSTED (exit 1)",
+      "actual": "KEY_NOT_TRUSTED (exit 1)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U06"
+    },
+    {
+      "id": "U07",
+      "profile": "ed25519",
+      "description": "Kunci hanya diizinkan untuk paket `other-app`",
+      "expected": "KEY_NOT_TRUSTED (exit 1)",
+      "actual": "KEY_NOT_TRUSTED (exit 1)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U07"
+    },
+    {
+      "id": "U07",
+      "profile": "ed25519",
+      "description": "Kontrol: izin `contoh-app` ditambahkan ke kunci yang sama",
+      "expected": "OK (exit 0)",
+      "actual": "OK (exit 0)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U07"
+    },
+    {
+      "id": "U11",
+      "profile": "ed25519",
+      "description": "Nilai `algorithm` = `ed448` pada manifest",
+      "expected": "UNSUPPORTED_ALGORITHM (exit 1)",
+      "actual": "UNSUPPORTED_ALGORITHM (exit 1)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U11"
+    },
+    {
+      "id": "U11",
+      "profile": "ed25519",
+      "description": "Nilai `algorithm` = `rsa-pkcs1-sha256` pada manifest",
+      "expected": "UNSUPPORTED_ALGORITHM (exit 1)",
+      "actual": "UNSUPPORTED_ALGORITHM (exit 1)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U11"
+    },
+    {
+      "id": "U11",
+      "profile": "ed25519",
+      "description": "Nilai `algorithm` = `ED25519` pada manifest",
+      "expected": "UNSUPPORTED_ALGORITHM (exit 1)",
+      "actual": "UNSUPPORTED_ALGORITHM (exit 1)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U11"
+    },
+    {
+      "id": "U12",
+      "profile": "ed25519",
+      "description": "Ditandatangani kunci lain berprofil sama (keyid 3e954e3af345...) yang tidak ada di trust store",
+      "expected": "KEY_NOT_TRUSTED (exit 1)",
+      "actual": "KEY_NOT_TRUSTED (exit 1)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U12"
+    },
+    {
+      "id": "U14",
+      "profile": "rsa-pss-sha256",
+      "description": "Manifest identik ditandatangani dua kali dengan kunci yang sama",
+      "expected": "manifest identik, signature berbeda",
+      "actual": "manifest identik, signature berbeda",
+      "passed": true,
+      "evidence": "test/scenarios/results/U14"
+    },
+    {
+      "id": "U14",
+      "profile": "rsa-pss-sha256",
+      "description": "Bundle pertama tetap valid",
+      "expected": "OK (exit 0)",
+      "actual": "OK (exit 0)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U14"
+    },
+    {
+      "id": "U14",
+      "profile": "rsa-pss-sha256",
+      "description": "Bundle kedua tetap valid",
+      "expected": "OK (exit 0)",
+      "actual": "OK (exit 0)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U14"
+    },
+    {
+      "id": "U14",
+      "profile": "ecdsa-p256-sha256",
+      "description": "Manifest identik ditandatangani dua kali dengan kunci yang sama",
+      "expected": "manifest identik, signature berbeda",
+      "actual": "manifest identik, signature berbeda",
+      "passed": true,
+      "evidence": "test/scenarios/results/U14"
+    },
+    {
+      "id": "U14",
+      "profile": "ecdsa-p256-sha256",
+      "description": "Bundle pertama tetap valid",
+      "expected": "OK (exit 0)",
+      "actual": "OK (exit 0)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U14"
+    },
+    {
+      "id": "U14",
+      "profile": "ecdsa-p256-sha256",
+      "description": "Bundle kedua tetap valid",
+      "expected": "OK (exit 0)",
+      "actual": "OK (exit 0)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U14"
+    },
+    {
+      "id": "U14",
+      "profile": "ed25519",
+      "description": "Manifest identik ditandatangani dua kali dengan kunci yang sama",
+      "expected": "manifest identik, signature identik",
+      "actual": "manifest identik, signature identik",
+      "passed": true,
+      "evidence": "test/scenarios/results/U14"
+    },
+    {
+      "id": "U14",
+      "profile": "ed25519",
+      "description": "Bundle pertama tetap valid",
+      "expected": "OK (exit 0)",
+      "actual": "OK (exit 0)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U14"
+    },
+    {
+      "id": "U14",
+      "profile": "ed25519",
+      "description": "Bundle kedua tetap valid",
+      "expected": "OK (exit 0)",
+      "actual": "OK (exit 0)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U14"
+    }
+  ]
+}

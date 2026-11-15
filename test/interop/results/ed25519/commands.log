@@ -1,0 +1,67 @@
+# Log perintah (test/interop/results/ed25519/commands.log)
+
+$ openssl.EXE genpkey -algorithm ed25519 -out test/interop/results/ed25519/openssl.key.pem
+exit: 0
+
+$ openssl.EXE pkey -in test/interop/results/ed25519/openssl.key.pem -pubout -out test/interop/results/ed25519/openssl.pub.pem
+exit: 0
+
+$ openssl.EXE pkey -in test/interop/results/ed25519/openssl.key.pem -pubout -outform DER -out test/interop/results/ed25519/openssl.pub.der
+exit: 0
+
+$ openssl.EXE dgst -sha256 -r test/interop/results/ed25519/openssl.pub.der
+exit: 0
+[stdout]
+3c2f05a7a6e2597af16e59f471e9204b8b6aa8f17a353cca5e7cedc7f2d12c0a *test/interop/results/ed25519/openssl.pub.der
+
+$ digisign trust add --key test/interop/results/ed25519/openssl.pub.pem --package contoh-app --store test/interop/results/ed25519/trust.json
+exit: 0
+[stdout]
+keyid:     3c2f05a7a6e2597af16e59f471e9204b8b6aa8f17a353cca5e7cedc7f2d12c0a
+algorithm: ed25519
+packages:  contoh-app
+[stderr]
+trust store updated
+
+$ digisign keygen --algorithm ed25519 --out test/interop/results/ed25519/program
+exit: 0
+[stdout]
+keyid:       748a42fe6fdcd27e9db38ae3819592a06adc317c250f01973506da5b48c7cc27
+algorithm:   ed25519
+private key: test/interop/results/ed25519/program.key.pem
+public key:  test/interop/results/ed25519/program.pub.pem
+
+$ openssl.EXE pkey -in test/interop/results/ed25519/program.key.pem -noout
+exit: 0
+
+$ openssl.EXE pkey -pubin -in test/interop/results/ed25519/program.pub.pem -outform DER -out test/interop/results/ed25519/program.pub.der
+exit: 0
+
+$ openssl.EXE dgst -sha256 -r test/interop/results/ed25519/program.pub.der
+exit: 0
+[stdout]
+748a42fe6fdcd27e9db38ae3819592a06adc317c250f01973506da5b48c7cc27 *test/interop/results/ed25519/program.pub.der
+
+$ digisign sign --file test/scenarios/inputs/contoh-app.bin --package contoh-app --version 1.0.0 --key test/interop/results/ed25519/openssl.key.pem --out test/interop/results/ed25519/bundle-program.json
+exit: 0
+[stdout]
+bundle:    test/interop/results/ed25519/bundle-program.json
+keyid:     3c2f05a7a6e2597af16e59f471e9204b8b6aa8f17a353cca5e7cedc7f2d12c0a
+algorithm: ed25519
+artifact:  contoh-app.bin (4096 bytes)
+
+$ openssl.EXE pkeyutl -verify -pubin -inkey test/interop/results/ed25519/openssl.pub.pem -rawin -in test/interop/results/ed25519/manifest.bin -sigfile test/interop/results/ed25519/sig-program.bin
+exit: 0
+[stdout]
+Signature Verified Successfully
+
+$ openssl.EXE pkeyutl -sign -inkey test/interop/results/ed25519/openssl.key.pem -rawin -in test/interop/results/ed25519/manifest.bin -out test/interop/results/ed25519/sig-openssl.bin
+exit: 0
+
+# test/interop/results/ed25519/bundle-openssl.json: manifest yang sama, tanda tangan dari OpenSSL
+
+$ digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/interop/results/ed25519/bundle-openssl.json --trust-store test/interop/results/ed25519/trust.json --package contoh-app --version 1.0.0 --json
+exit: 0
+[stdout]
+{"valid": true, "status": "OK", "message": "Signature and artifact are valid.", "algorithm": "ed25519", "keyid": "3c2f05a7a6e2597af16e59f471e9204b8b6aa8f17a353cca5e7cedc7f2d12c0a", "package": "contoh-app", "version": "1.0.0"}
+

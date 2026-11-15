@@ -1,0 +1,119 @@
+# Log perintah (test/scenarios/results/U14/commands.log)
+
+$ digisign trust add --key test/scenarios/keys/rsa-pss-sha256.pub.pem --package contoh-app --store test/scenarios/results/U14/trust.json
+exit: 0
+[stdout]
+keyid:     75a9c248ccb74d33d5362fc8fec746542313af70616e438a1f51a0c6a51612ef
+algorithm: rsa-pss-sha256
+packages:  contoh-app
+[stderr]
+trust store updated
+
+$ digisign sign --file test/scenarios/inputs/contoh-app.bin --package contoh-app --version 1.0.0 --key test/scenarios/keys/rsa-pss-sha256.key.pem --out test/scenarios/results/U14/rsa-pss-sha256-1.json
+exit: 0
+[stdout]
+bundle:    test/scenarios/results/U14/rsa-pss-sha256-1.json
+keyid:     75a9c248ccb74d33d5362fc8fec746542313af70616e438a1f51a0c6a51612ef
+algorithm: rsa-pss-sha256
+artifact:  contoh-app.bin (4096 bytes)
+
+$ digisign sign --file test/scenarios/inputs/contoh-app.bin --package contoh-app --version 1.0.0 --key test/scenarios/keys/rsa-pss-sha256.key.pem --out test/scenarios/results/U14/rsa-pss-sha256-2.json
+exit: 0
+[stdout]
+bundle:    test/scenarios/results/U14/rsa-pss-sha256-2.json
+keyid:     75a9c248ccb74d33d5362fc8fec746542313af70616e438a1f51a0c6a51612ef
+algorithm: rsa-pss-sha256
+artifact:  contoh-app.bin (4096 bytes)
+
+# rsa-pss-sha256: signature_b64 #1 = YfP0yjSyl+ATMqsPWEzLxUn4q7gcaWZUPgAMPVzW1CUBXCHeWTKXAtN7KtJn5MG1rsr9sQ04N1hoLmAPg7SVnhZMbnXIIJGOZ9KJuTi7gxm4fkHZkViTptbn3wXgh5DMzgTb/mkLS9KglP2r/Tfr7ruREZxwr/rV3poWufyIrFs74rxZn8I5+R0RmCZLMEnS6WjK9pq3UNp0nJL/vygKj1hMLRUHfy/P9EZQxBRSal5cfM/07buwRTj47q0q1CSs9zg0uZE21RR0wFHz9i/eHw0SyVXiCus3Pm5rcJBO2xMK/+64Za9E7I4W2E77l3zgGQJOv+AGd2ayJexS4z8Mks3Aq0xEJXxtQ5pkkMfrVNqPrJFO90jVKBZscVKoN4S3X3ueJMrlZJTfSg1VJVNpPeKSaAuDAgPxDD8nYNtdrfCQGQr/BQkIDDzW/uULoidMgtXuPknlbSLN7o0kqBl9flFxCR/r9moNCsK97KWvNX4qrKo4JIPjuKbZyB8qO26o
+
+# rsa-pss-sha256: signature_b64 #2 = L903giIITHTdQE5MrFPSpCNhM9GXnhQ2DMB4stpYO0A8WltrKdhebJ/HJY8s8L/H3WG0Zw2nL3BrdzGKd/k0/et6YJiphAp6aYR391PvWqHNj5+dLwZ30wxvDGzKdWrcEaephEjMiEqPlkgXAIDvJIUKu77d14N+R0pGwdDyGwAw18kHwRu1NKIP08c5cVMbfpMDFUR9d0s/l3Y8g4Jvl1ayTSpf2jfzSfeEfknClXiNN5ieW8be+VAZYr24fcMppQYc2FsiNtBAB8SR9qcDQZ563dRj7ei67M4x+6YbBTb3rd7UTpxZ4tFeJCwru3Ia6lm5xqfjnWAHmiPnAFtPk9C6YgcRRS69o0wv5g4a/QxvsJe9gKGNEAMsMejWN9P8kJ2/XR4v5mKABtPvPEn3GPF6QiUNkNkfIU4ML7iAOI8Sv1WNAOGN/kV6JI5TIOxIoWrIeseDJXWITMac83Nthkc3K3EZvJij62C39VJujVM/ZsObovyqbCHLKBH0gxYX
+
+$ digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U14/rsa-pss-sha256-1.json --trust-store test/scenarios/results/U14/trust.json --package contoh-app --version 1.0.0 --json
+exit: 0
+[stdout]
+{"valid": true, "status": "OK", "message": "Signature and artifact are valid.", "algorithm": "rsa-pss-sha256", "keyid": "75a9c248ccb74d33d5362fc8fec746542313af70616e438a1f51a0c6a51612ef", "package": "contoh-app", "version": "1.0.0"}
+
+$ digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U14/rsa-pss-sha256-2.json --trust-store test/scenarios/results/U14/trust.json --package contoh-app --version 1.0.0 --json
+exit: 0
+[stdout]
+{"valid": true, "status": "OK", "message": "Signature and artifact are valid.", "algorithm": "rsa-pss-sha256", "keyid": "75a9c248ccb74d33d5362fc8fec746542313af70616e438a1f51a0c6a51612ef", "package": "contoh-app", "version": "1.0.0"}
+
+$ digisign trust add --key test/scenarios/keys/ecdsa-p256-sha256.pub.pem --package contoh-app --store test/scenarios/results/U14/trust.json
+exit: 0
+[stdout]
+keyid:     6a5f13684eb0d960e0c9f52e89db5abf87a8e51b02b9e013c380835bc3316168
+algorithm: ecdsa-p256-sha256
+packages:  contoh-app
+[stderr]
+trust store updated
+
+$ digisign sign --file test/scenarios/inputs/contoh-app.bin --package contoh-app --version 1.0.0 --key test/scenarios/keys/ecdsa-p256-sha256.key.pem --out test/scenarios/results/U14/ecdsa-p256-sha256-1.json
+exit: 0
+[stdout]
+bundle:    test/scenarios/results/U14/ecdsa-p256-sha256-1.json
+keyid:     6a5f13684eb0d960e0c9f52e89db5abf87a8e51b02b9e013c380835bc3316168
+algorithm: ecdsa-p256-sha256
+artifact:  contoh-app.bin (4096 bytes)
+
+$ digisign sign --file test/scenarios/inputs/contoh-app.bin --package contoh-app --version 1.0.0 --key test/scenarios/keys/ecdsa-p256-sha256.key.pem --out test/scenarios/results/U14/ecdsa-p256-sha256-2.json
+exit: 0
+[stdout]
+bundle:    test/scenarios/results/U14/ecdsa-p256-sha256-2.json
+keyid:     6a5f13684eb0d960e0c9f52e89db5abf87a8e51b02b9e013c380835bc3316168
+algorithm: ecdsa-p256-sha256
+artifact:  contoh-app.bin (4096 bytes)
+
+# ecdsa-p256-sha256: signature_b64 #1 = +MXez52Or6e7axVV9COmnelSk41CRKiH4B5Px9e8/hDGwbt/MkCrQP5Cg7pXbso0sLcAUYqQfFQCi2n5bvog6Q==
+
+# ecdsa-p256-sha256: signature_b64 #2 = z8HWoLyCi3olQSuN901latdapi+MFByvQzIDHZPVRqXiml0wCRBuRk8dg3mLy08uR2wlPoFsypRrxPveGWOggA==
+
+$ digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U14/ecdsa-p256-sha256-1.json --trust-store test/scenarios/results/U14/trust.json --package contoh-app --version 1.0.0 --json
+exit: 0
+[stdout]
+{"valid": true, "status": "OK", "message": "Signature and artifact are valid.", "algorithm": "ecdsa-p256-sha256", "keyid": "6a5f13684eb0d960e0c9f52e89db5abf87a8e51b02b9e013c380835bc3316168", "package": "contoh-app", "version": "1.0.0"}
+
+$ digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U14/ecdsa-p256-sha256-2.json --trust-store test/scenarios/results/U14/trust.json --package contoh-app --version 1.0.0 --json
+exit: 0
+[stdout]
+{"valid": true, "status": "OK", "message": "Signature and artifact are valid.", "algorithm": "ecdsa-p256-sha256", "keyid": "6a5f13684eb0d960e0c9f52e89db5abf87a8e51b02b9e013c380835bc3316168", "package": "contoh-app", "version": "1.0.0"}
+
+$ digisign trust add --key test/scenarios/keys/ed25519.pub.pem --package contoh-app --store test/scenarios/results/U14/trust.json
+exit: 0
+[stdout]
+keyid:     00c1eb44d9d6388356d85574f23314798a57107d100e9d89f71c441dc6282c27
+algorithm: ed25519
+packages:  contoh-app
+[stderr]
+trust store updated
+
+$ digisign sign --file test/scenarios/inputs/contoh-app.bin --package contoh-app --version 1.0.0 --key test/scenarios/keys/ed25519.key.pem --out test/scenarios/results/U14/ed25519-1.json
+exit: 0
+[stdout]
+bundle:    test/scenarios/results/U14/ed25519-1.json
+keyid:     00c1eb44d9d6388356d85574f23314798a57107d100e9d89f71c441dc6282c27
+algorithm: ed25519
+artifact:  contoh-app.bin (4096 bytes)
+
+$ digisign sign --file test/scenarios/inputs/contoh-app.bin --package contoh-app --version 1.0.0 --key test/scenarios/keys/ed25519.key.pem --out test/scenarios/results/U14/ed25519-2.json
+exit: 0
+[stdout]
+bundle:    test/scenarios/results/U14/ed25519-2.json
+keyid:     00c1eb44d9d6388356d85574f23314798a57107d100e9d89f71c441dc6282c27
+algorithm: ed25519
+artifact:  contoh-app.bin (4096 bytes)
+
+# ed25519: signature_b64 #1 = kL9XlPs16yPL7jWGv0qItADohkns+nDs7OHj3sXPwsmBxxb3d8pfIzEPwmyPmzQBf+SCk4qxGsekfEhKgcwcCg==
+
+# ed25519: signature_b64 #2 = kL9XlPs16yPL7jWGv0qItADohkns+nDs7OHj3sXPwsmBxxb3d8pfIzEPwmyPmzQBf+SCk4qxGsekfEhKgcwcCg==
+
+$ digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U14/ed25519-1.json --trust-store test/scenarios/results/U14/trust.json --package contoh-app --version 1.0.0 --json
+exit: 0
+[stdout]
+{"valid": true, "status": "OK", "message": "Signature and artifact are valid.", "algorithm": "ed25519", "keyid": "00c1eb44d9d6388356d85574f23314798a57107d100e9d89f71c441dc6282c27", "package": "contoh-app", "version": "1.0.0"}
+
+$ digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U14/ed25519-2.json --trust-store test/scenarios/results/U14/trust.json --package contoh-app --version 1.0.0 --json
+exit: 0
+[stdout]
+{"valid": true, "status": "OK", "message": "Signature and artifact are valid.", "algorithm": "ed25519", "keyid": "00c1eb44d9d6388356d85574f23314798a57107d100e9d89f71c441dc6282c27", "package": "contoh-app", "version": "1.0.0"}
+

@@ -1,0 +1,119 @@
+{
+  "environment": {
+    "Waktu (UTC)": "2026-11-15 11:34:10",
+    "OS": "Windows-11-10.0.26200-SP0",
+    "Python": "3.12.10",
+    "cryptography": "50.0.1",
+    "OpenSSL CLI": "OpenSSL 3.2.2 4 Jun 2024 (Library: OpenSSL 3.2.2 4 Jun 2024)"
+  },
+  "cases": [
+    {
+      "id": "I1",
+      "profile": "rsa-pss-sha256",
+      "description": "Kunci buatan OpenSSL (`genpkey`) dibaca program; keyid sama",
+      "expected": "keyid 59dab9d5951ce379...",
+      "actual": "exit 0, keyid 59dab9d5951ce379...",
+      "passed": true,
+      "evidence": "test/interop/results/rsa-pss-sha256"
+    },
+    {
+      "id": "I2",
+      "profile": "rsa-pss-sha256",
+      "description": "Kunci buatan program (`keygen`) dibaca OpenSSL (`pkey`); keyid sama",
+      "expected": "keyid b784f299f706549c...",
+      "actual": "pkey exit 0/0, keyid b784f299f706549c...",
+      "passed": true,
+      "evidence": "test/interop/results/rsa-pss-sha256"
+    },
+    {
+      "id": "I3",
+      "profile": "rsa-pss-sha256",
+      "description": "Tanda tangan program diverifikasi OpenSSL",
+      "expected": "OpenSSL exit 0",
+      "actual": "OpenSSL exit 0: Verified OK",
+      "passed": true,
+      "evidence": "test/interop/results/rsa-pss-sha256"
+    },
+    {
+      "id": "I4",
+      "profile": "rsa-pss-sha256",
+      "description": "Tanda tangan OpenSSL diverifikasi program (`verify`)",
+      "expected": "OK (exit 0)",
+      "actual": "OK (exit 0)",
+      "passed": true,
+      "evidence": "test/interop/results/rsa-pss-sha256"
+    },
+    {
+      "id": "I1",
+      "profile": "ecdsa-p256-sha256",
+      "description": "Kunci buatan OpenSSL (`genpkey`) dibaca program; keyid sama",
+      "expected": "keyid e1c8ba79514d360c...",
+      "actual": "exit 0, keyid e1c8ba79514d360c...",
+      "passed": true,
+      "evidence": "test/interop/results/ecdsa-p256-sha256"
+    },
+    {
+      "id": "I2",
+      "profile": "ecdsa-p256-sha256",
+      "description": "Kunci buatan program (`keygen`) dibaca OpenSSL (`pkey`); keyid sama",
+      "expected": "keyid 58e85df3926f9160...",
+      "actual": "pkey exit 0/0, keyid 58e85df3926f9160...",
+      "passed": true,
+      "evidence": "test/interop/results/ecdsa-p256-sha256"
+    },
+    {
+      "id": "I3",
+      "profile": "ecdsa-p256-sha256",
+      "description": "Tanda tangan program diverifikasi OpenSSL",
+      "expected": "OpenSSL exit 0",
+      "actual": "OpenSSL exit 0: Verified OK",
+      "passed": true,
+      "evidence": "test/interop/results/ecdsa-p256-sha256"
+    },
+    {
+      "id": "I4",
+      "profile": "ecdsa-p256-sha256",
+      "description": "Tanda tangan OpenSSL diverifikasi program (`verify`)",
+      "expected": "OK (exit 0)",
+      "actual": "OK (exit 0)",
+      "passed": true,
+      "evidence": "test/interop/results/ecdsa-p256-sha256"
+    },
+    {
+      "id": "I1",
+      "profile": "ed25519",
+      "description": "Kunci buatan OpenSSL (`genpkey`) dibaca program; keyid sama",
+      "expected": "keyid 3c2f05a7a6e2597a...",
+      "actual": "exit 0, keyid 3c2f05a7a6e2597a...",
+      "passed": true,
+      "evidence": "test/interop/results/ed25519"
+    },
+    {
+      "id": "I2",
+      "profile": "ed25519",
+      "description": "Kunci buatan program (`keygen`) dibaca OpenSSL (`pkey`); keyid sama",
+      "expected": "keyid 748a42fe6fdcd27e...",
+      "actual": "pkey exit 0/0, keyid 748a42fe6fdcd27e...",
+      "passed": true,
+      "evidence": "test/interop/results/ed25519"
+    },
+    {
+      "id": "I3",
+      "profile": "ed25519",
+      "description": "Tanda tangan program diverifikasi OpenSSL",
+      "expected": "OpenSSL exit 0",
+      "actual": "OpenSSL exit 0: Signature Verified Successfully",
+      "passed": true,
+      "evidence": "test/interop/results/ed25519"
+    },
+    {
+      "id": "I4",
+      "profile": "ed25519",
+      "description": "Tanda tangan OpenSSL diverifikasi program (`verify`)",
+      "expected": "OK (exit 0)",
+      "actual": "OK (exit 0)",
+      "passed": true,
+      "evidence": "test/interop/results/ed25519"
+    }
+  ]
+}
