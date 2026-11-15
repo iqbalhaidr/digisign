@@ -2,7 +2,7 @@
 
 - **[API References](api/index.md)**
 - **[Examples](usage.md)**
-- **[Others](formats.md)**
+- **[Others](others.md)**
 
 ```{toctree}
 :hidden:
