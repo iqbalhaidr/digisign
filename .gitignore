@@ -2,6 +2,7 @@
 *.key.pem
 *.pem
 !*.pub.pem
+!test/scenarios/keys/*.key.pem
 
 __pycache__/
 *.py[codz]
