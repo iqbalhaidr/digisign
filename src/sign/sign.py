@@ -1,3 +1,6 @@
+"""Implementasi subcommand ``sign``: membuat manifest dan bundle untuk sebuah artefak.
+"""
+
 import os
 import sys
 from typing import TextIO
@@ -21,6 +24,31 @@ def sign_command(
     out: TextIO | None = None,
     err: TextIO | None = None,
 ) -> int:
+    """Tandatangani artefak rilis dan tulis bundle (subcommand ``sign``).
+
+    Args:
+        file_path (str): Path artefak rilis.
+        package (str): Nama paket, cocok :data:`~src.constants.PACKAGE_RE`.
+        version (str): Versi rilis, cocok :data:`~src.constants.VERSION_RE`.
+        key_path (str): Path kunci privat PKCS#8 PEM.
+        out_path (str): Path bundle keluaran; tidak boleh sudah ada dan tidak
+            boleh sama dengan ``file_path``.
+        out (TextIO | None): Stream keluaran normal. Default ``sys.stdout``.
+        err (TextIO | None): Stream pesan error. Default ``sys.stderr``.
+
+    Returns:
+        int: ``0`` bila bundle berhasil ditulis, ``2`` untuk input/format/kunci
+        tidak valid atau kegagalan I/O.
+
+    Example:
+        >>> sign_command("contoh-app.zip", "contoh-app", "1.0.0",
+        ...              "keys/release.key.pem", "contoh-app.bundle.json")
+        bundle:    contoh-app.bundle.json
+        keyid:     3f1c...
+        algorithm: ed25519
+        artifact:  contoh-app.zip (1234 bytes)
+        0
+    """
     out, err = out or sys.stdout, err or sys.stderr
     try:
         _validate_metadata(package, version)
@@ -40,6 +68,31 @@ def sign_command(
     return EXIT_OK
 
 def create_bundle(file_path: str, package: str, version: str, private_key: PrivateKey) -> tuple[Manifest, bytes]:
+    """Bentuk manifest, tandatangani, dan serialisasi bundle (tanpa menulis ke disk).
+
+    Profil algoritma dan ``keyid`` diturunkan dari ``private_key``; nama
+    artefak diambil dari basename ``file_path``.
+
+    Args:
+        file_path (str): Path artefak yang akan di-hash.
+        package (str): Nama paket.
+        version (str): Versi rilis.
+        private_key (PrivateKey): Kunci privat penanda tangan.
+
+    Returns:
+        tuple[Manifest, bytes]: Objek manifest dan isi berkas bundle.
+
+    Raises:
+        FormatError: Field manifest tidak valid (mis. nama berkas tidak cocok pola).
+        InvalidKeyError: Kunci tidak sesuai profil mana pun.
+        OSError: Artefak tidak dapat dibaca.
+
+    Example:
+        >>> key = generate_private_key("ed25519")
+        >>> manifest, bundle = create_bundle("contoh-app.zip", "contoh-app", "1.0.0", key)
+        >>> manifest.artifact.name
+        'contoh-app.zip'
+    """
     size, sha256 = hash_file(file_path)
     manifest = Manifest(
         package=package,

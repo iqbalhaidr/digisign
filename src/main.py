@@ -1,3 +1,9 @@
+"""Entry point CLI ``digisign`` (``python -m src.main``).
+
+Mendefinisikan parser argumen dan meneruskan setiap subcommand ke fungsi
+``*_command`` yang sesuai. Kesalahan argumen selalu menghasilkan exit code ``2``.
+"""
+
 import argparse
 import sys
 from typing import List, NoReturn
@@ -63,12 +69,19 @@ def handle_trust_remove(args: argparse.Namespace) -> int:
 # =====================================================================
 
 class StrictArgumentParser(argparse.ArgumentParser):
+    """``ArgumentParser`` yang keluar dengan exit code ``2`` saat argumen tidak valid."""
     def error(self, message: str) -> NoReturn:
         self.print_usage(sys.stderr)
         sys.stderr.write(f"{self.prog}: error: {message}\n")
         sys.exit(EXIT_USAGE_OR_IO_ERROR)
 
 def build_parser() -> argparse.ArgumentParser:
+    """Bangun parser argumen untuk seluruh subcommand.
+
+    Returns:
+        argparse.ArgumentParser: Parser dengan subcommand ``keygen``, ``sign``,
+        ``verify``, dan ``trust {add,list,remove}``.
+    """
     parser = StrictArgumentParser(
         prog="digisign",
         description="Software Release Sign & Verify",
@@ -132,6 +145,21 @@ def build_parser() -> argparse.ArgumentParser:
 # =====================================================================
 
 def main(argv: List[str] | None = None) -> int:
+    """Jalankan CLI.
+
+    Untuk ``verify --json``, kesalahan argumen atau exception tak terduga
+    tetap menghasilkan satu baris JSON berstatus ``INPUT_ERROR`` di stdout.
+
+    Args:
+        argv (list[str] | None): Argumen tanpa nama program. Default ``sys.argv[1:]``.
+
+    Returns:
+        int: Exit code proses (``0``, ``1``, atau ``2``).
+
+    Example:
+        >>> main(["trust", "list", "--store", "trust.json"])
+        0
+    """
     if argv is None:
         argv = sys.argv[1:]
 

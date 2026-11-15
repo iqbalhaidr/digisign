@@ -6,3 +6,8 @@
 __pycache__/
 *.py[codz]
 venv/
+# Sphinx build output
+docs/_build/
+
+Spesifikasi.pdf
+Tugas.pdf

@@ -21,6 +21,26 @@ Lorem ipsum dolor sit amet. [Format berkas serta pemetaan profil algoritma ke AP
 ## Run (Manual)
 Lorem ipsum dolor sit amet. [Tata cara menjalankan program di luar runner CI/CD.]
 
+## Dokumentasi API
+**Tautan**: [https://iqbalhaidr.github.io/digisign/](https://iqbalhaidr.github.io/digisign/)
+
+Dokumentasi API modul internal Python (`src/`) yang dipakai CLI: deskripsi API, parameter masukan dan keluaran beserta tipe datanya, contoh penggunaan, format berkas, serta status dan exit code.
+
+| Kakas | Kegunaan |
+| ----- | -------- |
+| Sphinx 9.1.1 | Generator dokumentasi |
+| `sphinx.ext.autodoc` + `sphinx.ext.napoleon` | Membangkitkan referensi API dari docstring gaya Google (`Args`, `Returns`, `Raises`, `Example`) di `src/` |
+| `sphinx.ext.viewcode`, `sphinx.ext.intersphinx` | Tautan ke kode sumber dan ke dokumentasi Python / `cryptography` |
+| MyST-Parser 5.2.0 | Halaman naratif dalam Markdown (`docs/*.md`) |
+| Furo 2025.12.19 | Tema HTML |
+| GitHub Pages + GitHub Actions | Hosting; `.github/workflows/docs.yml` membangun dan men-deploy otomatis setiap push ke `main` yang mengubah `src/` atau `docs/` |
+
+Build lokal:
+```bash
+pip install -r docs/requirements.txt
+sphinx-build -W --keep-going -b html docs docs/_build/html   # buka docs/_build/html/index.html
+```
+
 ## Lainnya
 **Tautan image public**: [digisgn](https://github.com/iqbalhaidr/digisign/pkgs/container/digisign)
 

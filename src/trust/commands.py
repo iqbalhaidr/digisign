@@ -1,3 +1,6 @@
+"""Implementasi subcommand ``trust add``, ``trust list``, dan ``trust remove``.
+"""
+
 import sys
 from typing import TextIO
 
@@ -21,6 +24,27 @@ def trust_add(
     out: TextIO | None = None,
     err: TextIO | None = None,
 ) -> int:
+    """Tambahkan izin paket untuk kunci publik (subcommand ``trust add``).
+
+    Trust store dibuat bila belum ada. Berkas hanya ditulis ulang bila ada perubahan.
+
+    Args:
+        key_path (str): Path kunci publik SPKI PEM.
+        package (str): Nama paket yang diizinkan.
+        store_path (str): Path trust store.
+        out (TextIO | None): Stream keluaran normal. Default ``sys.stdout``.
+        err (TextIO | None): Stream pesan error. Default ``sys.stderr``.
+
+    Returns:
+        int: ``0`` bila berhasil (termasuk bila sudah tepercaya), ``2`` bila gagal.
+
+    Example:
+        >>> trust_add("keys/release.pub.pem", "contoh-app", "trust.json")
+        keyid:     3f1c...
+        algorithm: ed25519
+        packages:  contoh-app
+        0
+    """
     out, err = out or sys.stdout, err or sys.stderr
     try:
         validate_package_name(package, "--package")
@@ -40,6 +64,18 @@ def trust_add(
     return EXIT_OK
 
 def trust_list(store_path: str, out: TextIO | None = None, err: TextIO | None = None) -> int:
+    """Tampilkan isi trust store (subcommand ``trust list``).
+
+    Setiap entri dicetak satu baris: ``<keyid>  <algorithm>  <pkg1>,<pkg2>``.
+
+    Args:
+        store_path (str): Path trust store.
+        out (TextIO | None): Stream keluaran normal. Default ``sys.stdout``.
+        err (TextIO | None): Stream pesan error. Default ``sys.stderr``.
+
+    Returns:
+        int: ``0`` bila berhasil, ``2`` bila trust store tidak dapat dibaca atau tidak valid.
+    """
     out, err = out or sys.stdout, err or sys.stderr
     try:
         store = load_trust_store(store_path)
@@ -58,6 +94,17 @@ def trust_remove(
     out: TextIO | None = None,
     err: TextIO | None = None,
 ) -> int:
+    """Hapus entri kunci dari trust store (subcommand ``trust remove``).
+
+    Args:
+        keyid (str): Fingerprint kunci yang dihapus.
+        store_path (str): Path trust store.
+        out (TextIO | None): Stream keluaran normal. Default ``sys.stdout``.
+        err (TextIO | None): Stream pesan error. Default ``sys.stderr``.
+
+    Returns:
+        int: ``0`` bila berhasil, ``2`` bila ``keyid`` tidak ditemukan atau gagal.
+    """
     out, err = out or sys.stdout, err or sys.stderr
     try:
         store = load_trust_store(store_path)
