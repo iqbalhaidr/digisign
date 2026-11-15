@@ -1,4 +1,4 @@
-"""Implementasi subcommand ``verify``: delapan tahap pemeriksaan rilis berurutan.
+"""Implementation of the ``verify`` subcommand: an ordered eight-step release check.
 """
 
 import os
@@ -43,32 +43,32 @@ def verify_release(
     package: str,
     version: str,
 ) -> VerifyResult:
-    """Verifikasi artefak rilis terhadap bundle dan trust store.
+    """Verify a release artifact against a bundle and trust store.
 
-    Pemeriksaan berhenti pada kegagalan pertama dengan urutan:
+    Checks stop at the first failure, in this order:
 
-    1. ``INPUT_ERROR`` — bundle, trust store, atau artefak tidak dapat dibaca.
-    2. ``FORMAT_ERROR`` — bundle, manifest (termasuk canonical), atau trust store tidak valid.
-    3. ``UNSUPPORTED_ALGORITHM`` — profil pada manifest tidak dikenal.
-    4. ``KEY_NOT_TRUSTED`` — ``keyid`` tidak ada, profil berbeda, atau paket tidak diizinkan.
-    5. ``INVALID_SIGNATURE`` — signature tidak cocok dengan manifest.
-    6. ``METADATA_MISMATCH`` — paket, versi, atau nama berkas berbeda dari yang diharapkan.
-    7. ``ARTIFACT_MISMATCH`` — ukuran atau SHA-256 artefak berbeda.
-    8. ``OK`` — semua pemeriksaan lolos.
+    1. ``INPUT_ERROR`` — bundle, trust store, or artifact cannot be read.
+    2. ``FORMAT_ERROR`` — invalid bundle, manifest (including canonical form), or trust store.
+    3. ``UNSUPPORTED_ALGORITHM`` — unknown manifest profile.
+    4. ``KEY_NOT_TRUSTED`` — ``keyid`` not found, profile differs, or package not allowed.
+    5. ``INVALID_SIGNATURE`` — signature does not match the manifest.
+    6. ``METADATA_MISMATCH`` — package, version, or file name differs from expected.
+    7. ``ARTIFACT_MISMATCH`` — artifact size or SHA-256 differs.
+    8. ``OK`` — all checks passed.
 
-    Isi manifest baru dipercaya setelah tahap 5 lolos; tahap 6–7 membandingkan
-    manifest terverifikasi dengan input pemanggil.
+    Manifest contents are trusted only after step 5 passes; steps 6–7 compare
+    the verified manifest with the caller's input.
 
     Args:
-        file_path (str): Path artefak rilis.
-        bundle_path (str): Path bundle.
-        trust_store_path (str): Path trust store.
-        package (str): Nama paket yang diharapkan.
-        version (str): Versi yang diharapkan.
+        file_path (str): Release artifact path.
+        bundle_path (str): Bundle path.
+        trust_store_path (str): Trust store path.
+        package (str): Expected package name.
+        version (str): Expected version.
 
     Returns:
-        VerifyResult: Hasil verifikasi. Fungsi ini tidak melempar exception
-        untuk input buruk; semua kegagalan dikembalikan sebagai status.
+        VerifyResult: Verification result. Never raises on bad input; every
+        failure is returned as a status.
 
     Example:
         >>> r = verify_release("contoh-app.zip", "contoh-app.bundle.json",
@@ -145,23 +145,23 @@ def verify_command(
     out: TextIO | None = None,
     err: TextIO | None = None,
 ) -> int:
-    """Jalankan verifikasi dan cetak hasilnya (subcommand ``verify``).
+    """Run verification and print the result (``verify`` subcommand).
 
-    Mode teks mencetak ``<STATUS>: <message>`` ke ``out``. Mode JSON mencetak
-    :meth:`VerifyResult.to_json` ke ``out`` dan, bila gagal, ringkasan ke ``err``.
+    Text mode prints ``<STATUS>: <message>`` to ``out``. JSON mode prints
+    :meth:`VerifyResult.to_json` to ``out`` and, on failure, a summary to ``err``.
 
     Args:
-        file_path (str): Path artefak rilis.
-        bundle_path (str): Path bundle.
-        trust_store_path (str): Path trust store.
-        package (str): Nama paket yang diharapkan.
-        version (str): Versi yang diharapkan.
-        as_json (bool): Keluarkan hasil dalam format JSON.
-        out (TextIO | None): Stream keluaran normal. Default ``sys.stdout``.
-        err (TextIO | None): Stream pesan error. Default ``sys.stderr``.
+        file_path (str): Release artifact path.
+        bundle_path (str): Bundle path.
+        trust_store_path (str): Trust store path.
+        package (str): Expected package name.
+        version (str): Expected version.
+        as_json (bool): Output the result as JSON.
+        out (TextIO | None): Output stream. Default ``sys.stdout``.
+        err (TextIO | None): Error stream. Default ``sys.stderr``.
 
     Returns:
-        int: ``0`` (valid), ``1`` (ditolak), atau ``2`` (input error).
+        int: ``0`` (valid), ``1`` (rejected), or ``2`` (input error).
     """
     out, err = out or sys.stdout, err or sys.stderr
     result = verify_release(file_path, bundle_path, trust_store_path, package, version)

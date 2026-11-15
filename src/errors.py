@@ -1,8 +1,8 @@
-"""Hierarki exception yang dipakai seluruh modul.
+"""Exception hierarchy shared by all modules.
 
-Semua error yang disengaja diturunkan dari :class:`SignerError`, sehingga
-lapisan subcommand cukup menangkap ``SignerError`` (dan ``OSError`` untuk I/O)
-lalu memetakannya ke exit code.
+All intentional errors derive from :class:`SignerError`, so subcommands only
+need to catch ``SignerError`` (and ``OSError`` for I/O) and map it to an exit
+code.
 
 .. code-block:: text
 
@@ -14,13 +14,13 @@ lalu memetakannya ke exit code.
 """
 
 class SignerError(Exception):
-    "Default class untuk semua error pada program"
+    "Base class for all program errors."
 
 class FormatError(SignerError):
-    "Class error untuk format tidak sesuai kontrak (struktur, tipe, ukuran, serialisasi)"
+    "Data violates the format contract (structure, type, size, serialization)."
 
 class UnsupportedAlgorithmError(SignerError):
-    "Class error untuk nama profil algoritma yang tidak tersedia"
+    "Unknown algorithm profile name."
 
 class InvalidKeyError(SignerError):
-    "Class error untuk kunci dengan encoding PEM/DER, tipe, atau parameter yang tidak sesuai profil"
+    "Key has invalid PEM/DER encoding, type, or parameters for its profile."

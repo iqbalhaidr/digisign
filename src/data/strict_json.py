@@ -1,7 +1,7 @@
-"""Parser JSON ketat dan helper validasi tipe.
+"""Strict JSON parser and type validation helpers.
 
-Dibangun di atas :mod:`json` standar dengan hook tambahan untuk menolak
-konstruksi yang ambigu atau berbahaya bagi kontrak format.
+Built on the standard :mod:`json` module with extra hooks that reject
+constructs that are ambiguous or unsafe for the format contract.
 """
 
 import json
@@ -37,26 +37,26 @@ def _reject_null(value: object, where: str = "root") -> None:
             _reject_null(item, f"{where}[{index}]")
 
 def parse_strict(data: bytes, max_bytes: int | None = None) -> Any:
-    """Parse JSON dengan aturan ketat.
+    """Parse JSON with strict rules.
 
-    Yang ditolak:
+    Rejects:
 
-    * Ukuran melebihi ``max_bytes`` (diperiksa sebelum parsing).
-    * UTF-8 BOM dan byte non-UTF-8.
-    * Nama field duplikat pada objek mana pun.
-    * Konstanta ``NaN``, ``Infinity``, ``-Infinity``.
-    * Bilangan non-integer (pecahan/eksponen).
-    * Nilai ``null`` di posisi mana pun.
+    * Size above ``max_bytes`` (checked before parsing).
+    * UTF-8 BOM and non-UTF-8 bytes.
+    * Duplicate keys in any object.
+    * ``NaN``, ``Infinity``, ``-Infinity`` constants.
+    * Non-integer numbers (fractions/exponents).
+    * ``null`` values anywhere.
 
     Args:
-        data (bytes): Dokumen JSON mentah.
-        max_bytes (int | None): Batas ukuran opsional dalam byte.
+        data (bytes): Raw JSON document.
+        max_bytes (int | None): Optional size limit in bytes.
 
     Returns:
-        Any: Nilai Python hasil parsing (``dict``, ``list``, ``str``, ``int``, ``bool``).
+        Any: Parsed Python value (``dict``, ``list``, ``str``, ``int``, ``bool``).
 
     Raises:
-        FormatError: Bila salah satu aturan dilanggar atau JSON tidak valid.
+        FormatError: Any rule is violated or the JSON is invalid.
 
     Example:
         >>> parse_strict(b'{"a": 1}')
@@ -92,20 +92,20 @@ def parse_strict(data: bytes, max_bytes: int | None = None) -> Any:
     return value
 
 def expect_object(value: object, keys: list[str], where: str) -> dict[str, Any]:
-    """Pastikan ``value`` adalah objek dengan himpunan field tepat ``keys``.
+    """Ensure ``value`` is an object whose field set is exactly ``keys``.
 
-    Field yang kurang maupun berlebih sama-sama ditolak.
+    Both missing and extra fields are rejected.
 
     Args:
-        value (object): Nilai hasil :func:`parse_strict`.
-        keys (list[str]): Daftar nama field yang wajib ada (dan satu-satunya yang boleh ada).
-        where (str): Lokasi untuk pesan error, mis. ``"manifest.artifact"``.
+        value (object): Output of :func:`parse_strict`.
+        keys (list[str]): Required field names (and the only ones allowed).
+        where (str): Location for error messages, e.g. ``"manifest.artifact"``.
 
     Returns:
-        dict[str, Any]: ``value`` itu sendiri.
+        dict[str, Any]: ``value`` itself.
 
     Raises:
-        FormatError: Bukan ``dict`` atau himpunan field berbeda.
+        FormatError: Not a ``dict`` or the field set differs.
     """
     if type(value) is not dict:
         raise FormatError(f"{where}: must be an object")
@@ -121,36 +121,36 @@ def expect_object(value: object, keys: list[str], where: str) -> dict[str, Any]:
     return value
 
 def expect_str(value: object, where: str) -> str:
-    """Pastikan ``value`` bertipe ``str``.
+    """Ensure ``value`` is a ``str``.
 
     Args:
-        value (object): Nilai yang diperiksa.
-        where (str): Lokasi untuk pesan error.
+        value (object): Value to check.
+        where (str): Location for error messages.
 
     Returns:
-        str: ``value`` itu sendiri.
+        str: ``value`` itself.
 
     Raises:
-        FormatError: Bukan string.
+        FormatError: Not a string.
     """
     if type(value) is not str:
         raise FormatError(f"{where}: must be a string")
     return value
 
 def expect_int(value: object, where: str, minimum: int, maximum: int) -> int:
-    """Pastikan ``value`` integer (bukan ``bool``) dalam rentang inklusif.
+    """Ensure ``value`` is an integer (not ``bool``) within an inclusive range.
 
     Args:
-        value (object): Nilai yang diperiksa.
-        where (str): Lokasi untuk pesan error.
-        minimum (int): Batas bawah inklusif.
-        maximum (int): Batas atas inklusif.
+        value (object): Value to check.
+        where (str): Location for error messages.
+        minimum (int): Inclusive lower bound.
+        maximum (int): Inclusive upper bound.
 
     Returns:
-        int: ``value`` itu sendiri.
+        int: ``value`` itself.
 
     Raises:
-        FormatError: Bukan ``int`` atau di luar ``minimum..maximum``.
+        FormatError: Not an ``int`` or outside ``minimum..maximum``.
     """
     if type(value) is not int:
         raise FormatError(f"{where}: must be an integer")

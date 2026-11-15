@@ -8,7 +8,7 @@ author = "Muhammad Aufa Farabi, Joel Hotlan Haris Siahaan, Muhammad Iqbal Haidar
 copyright = "2026, " + author
 release = "1.0.0"
 version = release
-language = "id"
+language = "en"
 
 extensions = [
     "sphinx.ext.autodoc", 

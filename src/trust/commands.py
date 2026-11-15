@@ -1,4 +1,4 @@
-"""Implementasi subcommand ``trust add``, ``trust list``, dan ``trust remove``.
+"""Implementation of the ``trust add``, ``trust list``, and ``trust remove`` subcommands.
 """
 
 import sys
@@ -24,19 +24,19 @@ def trust_add(
     out: TextIO | None = None,
     err: TextIO | None = None,
 ) -> int:
-    """Tambahkan izin paket untuk kunci publik (subcommand ``trust add``).
+    """Grant a public key permission for a package (``trust add`` subcommand).
 
-    Trust store dibuat bila belum ada. Berkas hanya ditulis ulang bila ada perubahan.
+    Creates the trust store if missing. The file is rewritten only on change.
 
     Args:
-        key_path (str): Path kunci publik SPKI PEM.
-        package (str): Nama paket yang diizinkan.
-        store_path (str): Path trust store.
-        out (TextIO | None): Stream keluaran normal. Default ``sys.stdout``.
-        err (TextIO | None): Stream pesan error. Default ``sys.stderr``.
+        key_path (str): SPKI PEM public key path.
+        package (str): Allowed package name.
+        store_path (str): Trust store path.
+        out (TextIO | None): Output stream. Default ``sys.stdout``.
+        err (TextIO | None): Error stream. Default ``sys.stderr``.
 
     Returns:
-        int: ``0`` bila berhasil (termasuk bila sudah tepercaya), ``2`` bila gagal.
+        int: ``0`` on success (including already trusted); ``2`` on failure.
 
     Example:
         >>> trust_add("keys/release.pub.pem", "contoh-app", "trust.json")
@@ -64,17 +64,17 @@ def trust_add(
     return EXIT_OK
 
 def trust_list(store_path: str, out: TextIO | None = None, err: TextIO | None = None) -> int:
-    """Tampilkan isi trust store (subcommand ``trust list``).
+    """Print the trust store contents (``trust list`` subcommand).
 
-    Setiap entri dicetak satu baris: ``<keyid>  <algorithm>  <pkg1>,<pkg2>``.
+    Each entry is printed on one line: ``<keyid>  <algorithm>  <pkg1>,<pkg2>``.
 
     Args:
-        store_path (str): Path trust store.
-        out (TextIO | None): Stream keluaran normal. Default ``sys.stdout``.
-        err (TextIO | None): Stream pesan error. Default ``sys.stderr``.
+        store_path (str): Trust store path.
+        out (TextIO | None): Output stream. Default ``sys.stdout``.
+        err (TextIO | None): Error stream. Default ``sys.stderr``.
 
     Returns:
-        int: ``0`` bila berhasil, ``2`` bila trust store tidak dapat dibaca atau tidak valid.
+        int: ``0`` on success; ``2`` if the trust store is unreadable or invalid.
     """
     out, err = out or sys.stdout, err or sys.stderr
     try:
@@ -94,16 +94,16 @@ def trust_remove(
     out: TextIO | None = None,
     err: TextIO | None = None,
 ) -> int:
-    """Hapus entri kunci dari trust store (subcommand ``trust remove``).
+    """Remove a key entry from the trust store (``trust remove`` subcommand).
 
     Args:
-        keyid (str): Fingerprint kunci yang dihapus.
-        store_path (str): Path trust store.
-        out (TextIO | None): Stream keluaran normal. Default ``sys.stdout``.
-        err (TextIO | None): Stream pesan error. Default ``sys.stderr``.
+        keyid (str): Fingerprint of the key to remove.
+        store_path (str): Trust store path.
+        out (TextIO | None): Output stream. Default ``sys.stdout``.
+        err (TextIO | None): Error stream. Default ``sys.stderr``.
 
     Returns:
-        int: ``0`` bila berhasil, ``2`` bila ``keyid`` tidak ditemukan atau gagal.
+        int: ``0`` on success; ``2`` if ``keyid`` is not found or on failure.
     """
     out, err = out or sys.stdout, err or sys.stderr
     try:

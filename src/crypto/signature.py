@@ -1,7 +1,7 @@
-"""Operasi tanda tangan dan verifikasi untuk ketiga profil.
+"""Signing and verification for all three profiles.
 
-Pesan yang ditandatangani adalah byte manifest canonical apa adanya; hashing
-dilakukan oleh primitif masing-masing profil (Ed25519 tanpa pre-hash eksternal).
+The signed message is the raw canonical manifest bytes; hashing is done by
+each profile's primitive (Ed25519 uses no external pre-hash).
 """
 
 from cryptography.exceptions import InvalidSignature
@@ -27,22 +27,22 @@ def _pss_padding() -> padding.PSS:
     return padding.PSS(mgf=padding.MGF1(hashes.SHA256()), salt_length=RSA_PSS_SALT_BYTES)
 
 def sign(private_key: PrivateKey, message: bytes) -> bytes:
-    """Tandatangani ``message`` dengan kunci privat sesuai profilnya.
+    """Sign ``message`` with a private key using its profile.
 
-    * ``rsa-pss-sha256``: RSASSA-PSS, MGF1-SHA256, salt 32 byte → 384 byte.
-    * ``ecdsa-p256-sha256``: ECDSA-SHA256, output DER dikonversi ke raw
-      ``r || s`` → 64 byte.
-    * ``ed25519``: Ed25519 murni → 64 byte.
+    * ``rsa-pss-sha256``: RSASSA-PSS, MGF1-SHA256, 32-byte salt → 384 bytes.
+    * ``ecdsa-p256-sha256``: ECDSA-SHA256, DER output converted to raw
+      ``r || s`` → 64 bytes.
+    * ``ed25519``: pure Ed25519 → 64 bytes.
 
     Args:
-        private_key (PrivateKey): Kunci privat dengan profil yang didukung.
-        message (bytes): Pesan yang ditandatangani (manifest canonical).
+        private_key (PrivateKey): Private key with a supported profile.
+        message (bytes): Message to sign (canonical manifest).
 
     Returns:
-        bytes: Signature dengan panjang tetap sesuai :data:`SIGNATURE_BYTES`.
+        bytes: Fixed-length signature per :data:`SIGNATURE_BYTES`.
 
     Raises:
-        InvalidKeyError: Kunci tidak sesuai profil mana pun.
+        InvalidKeyError: Key matches no supported profile.
 
     Example:
         >>> key = generate_private_key("ecdsa-p256-sha256")
@@ -60,24 +60,24 @@ def sign(private_key: PrivateKey, message: bytes) -> bytes:
     return private_key.sign(message)
 
 def verify(public_key: PublicKey, profile: str, message: bytes, signature: bytes) -> bool:
-    """Verifikasi signature terhadap pesan dan kunci publik.
+    """Verify a signature against a message and public key.
 
-    Panjang signature diperiksa lebih dulu; untuk ECDSA, nilai ``r`` dan ``s``
-    juga wajib berada pada rentang ``[1, n-1]`` sebelum dikonversi ke DER.
+    Signature length is checked first; for ECDSA, ``r`` and ``s`` must also
+    lie in ``[1, n-1]`` before DER conversion.
 
     Args:
-        public_key (PublicKey): Kunci publik penanda tangan.
-        profile (str): Profil algoritma yang diklaim manifest.
-        message (bytes): Pesan asli (manifest canonical).
-        signature (bytes): Signature yang akan diperiksa.
+        public_key (PublicKey): Signer's public key.
+        profile (str): Algorithm profile claimed by the manifest.
+        message (bytes): Original message (canonical manifest).
+        signature (bytes): Signature to check.
 
     Returns:
-        bool: ``True`` bila signature valid, ``False`` bila tidak (termasuk
-        panjang salah atau ``r``/``s`` di luar rentang).
+        bool: ``True`` if valid, otherwise ``False`` (including wrong length
+        or ``r``/``s`` out of range).
 
     Raises:
-        UnsupportedAlgorithmError: ``profile`` tidak dikenal.
-        InvalidKeyError: Kunci publik tidak sesuai ``profile``.
+        UnsupportedAlgorithmError: Unknown ``profile``.
+        InvalidKeyError: Public key does not match ``profile``.
 
     Example:
         >>> key = generate_private_key("ed25519")
@@ -108,26 +108,26 @@ def verify(public_key: PublicKey, profile: str, message: bytes, signature: bytes
     return True
 
 def ecdsa_der_to_raw(der: bytes) -> bytes:
-    """Konversi signature ECDSA DER (``SEQUENCE{r, s}``) ke raw ``r || s``.
+    """Convert a DER ECDSA signature (``SEQUENCE{r, s}``) to raw ``r || s``.
 
     Args:
-        der (bytes): Signature ECDSA dalam encoding DER.
+        der (bytes): DER-encoded ECDSA signature.
 
     Returns:
-        bytes: 64 byte; ``r`` dan ``s`` masing-masing 32 byte big-endian.
+        bytes: 64 bytes; ``r`` and ``s`` as 32-byte big-endian each.
     """
     r, s = decode_dss_signature(der)
     return r.to_bytes(P256_SCALAR_BYTES, "big") + s.to_bytes(P256_SCALAR_BYTES, "big")
 
 def ecdsa_raw_to_der(raw: bytes) -> bytes | None:
-    """Konversi signature ECDSA raw ``r || s`` ke DER.
+    """Convert a raw ``r || s`` ECDSA signature to DER.
 
     Args:
-        raw (bytes): Signature raw 64 byte.
+        raw (bytes): 64-byte raw signature.
 
     Returns:
-        bytes | None: Signature DER, atau ``None`` bila panjang bukan 64 byte
-        atau ``r``/``s`` di luar rentang ``[1, n-1]`` (n = orde kurva P-256).
+        bytes | None: DER signature, or ``None`` if the length is not 64 bytes
+        or ``r``/``s`` is outside ``[1, n-1]`` (n = P-256 curve order).
     """
     if len(raw) != 2 * P256_SCALAR_BYTES:
         return None

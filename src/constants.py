@@ -1,28 +1,28 @@
-"""Konstanta global: identitas skema, batas ukuran, dan pola validasi field.
+"""Global constants: schema identifiers, size limits, and field validation patterns.
 
-Seluruh pola ``*_RE`` dipakai dengan :meth:`re.Pattern.fullmatch`, sehingga
-string harus cocok secara utuh (tanpa anchor ``^``/``$``).
+All ``*_RE`` patterns are used with :meth:`re.Pattern.fullmatch`, so the whole
+string must match (no ``^``/``$`` anchors needed).
 """
 
 import re
 
-#: Nilai wajib field ``schema`` pada manifest.
+#: Required value of the manifest ``schema`` field.
 MANIFEST_SCHEMA = "minisign-manifest/v1"
-#: Nilai wajib field ``schema`` pada bundle.
+#: Required value of the bundle ``schema`` field.
 BUNDLE_SCHEMA = "minisign-bundle/v1"
 
-#: Ukuran maksimum manifest canonical dalam byte (16 KiB).
+#: Maximum canonical manifest size in bytes (16 KiB).
 MAX_MANIFEST_BYTES = 16 * 1024
-#: Ukuran maksimum berkas bundle dalam byte (64 KiB).
+#: Maximum bundle file size in bytes (64 KiB).
 MAX_BUNDLE_BYTES = 64 * 1024
-#: Bilangan bulat terbesar yang aman di JSON (``2**53 - 1``); batas atas ``artifact.size``.
+#: Largest JSON-safe integer (``2**53 - 1``); upper bound of ``artifact.size``.
 MAX_SAFE_INT = 2**53 - 1
 
-#: Pola nama paket: diawali huruf kecil/angka, lalu ``[a-z0-9._-]``, panjang total 1–64.
+#: Package name: starts with a lowercase letter/digit, then ``[a-z0-9._-]``; 1–64 chars.
 PACKAGE_RE = re.compile(r"[a-z0-9][a-z0-9._-]{0,63}")
-#: Pola versi rilis: diawali alfanumerik, lalu ``[A-Za-z0-9._+-]``, panjang total 1–64.
+#: Release version: starts with an alphanumeric, then ``[A-Za-z0-9._+-]``; 1–64 chars.
 VERSION_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._+-]{0,63}")
-#: Pola nama berkas artefak: diawali alfanumerik, lalu ``[A-Za-z0-9._-]``, panjang total 1–128.
+#: Artifact file name: starts with an alphanumeric, then ``[A-Za-z0-9._-]``; 1–128 chars.
 ARTIFACT_NAME_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]{0,127}")
-#: Pola 64 karakter heksadesimal huruf kecil (digest SHA-256 dan keyid).
+#: 64 lowercase hex characters (SHA-256 digest and keyid).
 HEX64_RE = re.compile(r"[0-9a-f]{64}")

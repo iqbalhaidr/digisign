@@ -1,4 +1,4 @@
-"""Decoder PEM ketat untuk satu blok kunci.
+"""Strict PEM decoder for a single key block.
 """
 
 import base64
@@ -7,24 +7,24 @@ import binascii
 from src.errors import InvalidKeyError
 
 def decode_pem(data: bytes, label: str) -> bytes:
-    """Decode satu blok PEM berlabel tertentu menjadi DER.
+    """Decode a single PEM block with the given label into DER.
 
-    Aturan yang ditegakkan:
+    Enforced rules:
 
-    * Seluruh isi harus ASCII.
-    * Tepat satu blok ``-----BEGIN <label>-----`` … ``-----END <label>-----``
-      tanpa teks lain di luar blok (baris kosong diabaikan, CRLF diterima).
-    * Body Base64 harus valid dan tidak kosong.
+    * Content must be ASCII only.
+    * Exactly one ``-----BEGIN <label>-----`` … ``-----END <label>-----`` block
+      with no text outside it (blank lines ignored, CRLF accepted).
+    * The Base64 body must be valid and non-empty.
 
     Args:
-        data (bytes): Isi berkas PEM.
-        label (str): Label yang diharapkan, mis. ``"PRIVATE KEY"`` atau ``"PUBLIC KEY"``.
+        data (bytes): PEM file contents.
+        label (str): Expected label, e.g. ``"PRIVATE KEY"`` or ``"PUBLIC KEY"``.
 
     Returns:
-        bytes: Byte DER hasil decode body Base64.
+        bytes: DER bytes decoded from the Base64 body.
 
     Raises:
-        InvalidKeyError: Bila salah satu aturan di atas dilanggar.
+        InvalidKeyError: Any rule above is violated.
     """
     try:
         text = data.decode("ascii")

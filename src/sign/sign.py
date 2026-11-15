@@ -1,4 +1,4 @@
-"""Implementasi subcommand ``sign``: membuat manifest dan bundle untuk sebuah artefak.
+"""Implementation of the ``sign`` subcommand: builds a manifest and bundle for an artifact.
 """
 
 import os
@@ -24,21 +24,21 @@ def sign_command(
     out: TextIO | None = None,
     err: TextIO | None = None,
 ) -> int:
-    """Tandatangani artefak rilis dan tulis bundle (subcommand ``sign``).
+    """Sign a release artifact and write its bundle (``sign`` subcommand).
 
     Args:
-        file_path (str): Path artefak rilis.
-        package (str): Nama paket, cocok :data:`~src.constants.PACKAGE_RE`.
-        version (str): Versi rilis, cocok :data:`~src.constants.VERSION_RE`.
-        key_path (str): Path kunci privat PKCS#8 PEM.
-        out_path (str): Path bundle keluaran; tidak boleh sudah ada dan tidak
-            boleh sama dengan ``file_path``.
-        out (TextIO | None): Stream keluaran normal. Default ``sys.stdout``.
-        err (TextIO | None): Stream pesan error. Default ``sys.stderr``.
+        file_path (str): Release artifact path.
+        package (str): Package name, matching :data:`~src.constants.PACKAGE_RE`.
+        version (str): Release version, matching :data:`~src.constants.VERSION_RE`.
+        key_path (str): PKCS#8 PEM private key path.
+        out_path (str): Output bundle path; must not exist and must differ
+            from ``file_path``.
+        out (TextIO | None): Output stream. Default ``sys.stdout``.
+        err (TextIO | None): Error stream. Default ``sys.stderr``.
 
     Returns:
-        int: ``0`` bila bundle berhasil ditulis, ``2`` untuk input/format/kunci
-        tidak valid atau kegagalan I/O.
+        int: ``0`` if the bundle was written; ``2`` on invalid input/format/key
+        or I/O failure.
 
     Example:
         >>> sign_command("contoh-app.zip", "contoh-app", "1.0.0",
@@ -68,24 +68,24 @@ def sign_command(
     return EXIT_OK
 
 def create_bundle(file_path: str, package: str, version: str, private_key: PrivateKey) -> tuple[Manifest, bytes]:
-    """Bentuk manifest, tandatangani, dan serialisasi bundle (tanpa menulis ke disk).
+    """Build the manifest, sign it, and serialize the bundle (no disk write).
 
-    Profil algoritma dan ``keyid`` diturunkan dari ``private_key``; nama
-    artefak diambil dari basename ``file_path``.
+    The algorithm profile and ``keyid`` come from ``private_key``; the
+    artifact name is the basename of ``file_path``.
 
     Args:
-        file_path (str): Path artefak yang akan di-hash.
-        package (str): Nama paket.
-        version (str): Versi rilis.
-        private_key (PrivateKey): Kunci privat penanda tangan.
+        file_path (str): Path of the artifact to hash.
+        package (str): Package name.
+        version (str): Release version.
+        private_key (PrivateKey): Signer's private key.
 
     Returns:
-        tuple[Manifest, bytes]: Objek manifest dan isi berkas bundle.
+        tuple[Manifest, bytes]: Manifest object and bundle file contents.
 
     Raises:
-        FormatError: Field manifest tidak valid (mis. nama berkas tidak cocok pola).
-        InvalidKeyError: Kunci tidak sesuai profil mana pun.
-        OSError: Artefak tidak dapat dibaca.
+        FormatError: Invalid manifest field (e.g. file name does not match the pattern).
+        InvalidKeyError: Key matches no supported profile.
+        OSError: Artifact cannot be read.
 
     Example:
         >>> key = generate_private_key("ed25519")

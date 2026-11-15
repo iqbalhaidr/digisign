@@ -1,7 +1,7 @@
-"""Utilitas I/O berkas: hashing streaming dan penulisan berkas yang aman.
+"""File I/O utilities: streaming hashing and safe file writes.
 
-Penulisan dibuat *crash-safe*: data di-``fsync`` sebelum berkas dianggap jadi,
-dan berkas parsial dihapus bila terjadi kegagalan.
+Writes are *crash-safe*: data is ``fsync``-ed before the file is considered
+complete, and partial files are removed on failure.
 """
 
 import contextlib
@@ -9,28 +9,28 @@ import hashlib
 import os
 import tempfile
 
-#: Permission default berkas publik (bundle, kunci publik, trust store).
+#: Default mode for public files (bundle, public key, trust store).
 PUBLIC_FILE_MODE = 0o644
-#: Permission berkas kunci privat (hanya pemilik).
+#: Mode for private key files (owner only).
 PRIVATE_FILE_MODE = 0o600
 
 _CHUNK_SIZE = 1024 * 1024
 
 def hash_file(path: str) -> tuple[int, str]:
-    """Hitung ukuran dan digest SHA-256 sebuah berkas secara streaming.
+    """Compute a file's size and SHA-256 digest by streaming.
 
-    Berkas dibaca per blok 1 MiB sehingga penggunaan memori konstan
-    berapapun ukuran artefaknya.
+    The file is read in 1 MiB chunks, so memory use is constant regardless of
+    artifact size.
 
     Args:
-        path (str): Path berkas yang akan di-hash.
+        path (str): Path of the file to hash.
 
     Returns:
-        tuple[int, str]: Pasangan ``(size, sha256)`` — ukuran dalam byte dan
-        digest SHA-256 dalam 64 karakter heksadesimal huruf kecil.
+        tuple[int, str]: ``(size, sha256)`` — size in bytes and SHA-256 digest
+        as 64 lowercase hex characters.
 
     Raises:
-        OSError: Berkas tidak ada atau tidak dapat dibaca.
+        OSError: File does not exist or cannot be read.
 
     Example:
         >>> size, digest = hash_file("contoh-app.zip")
@@ -46,24 +46,23 @@ def hash_file(path: str) -> tuple[int, str]:
     return size, digest.hexdigest()
 
 def write_new(path: str, data: bytes, mode: int = PUBLIC_FILE_MODE) -> None:
-    """Tulis berkas **baru**; gagal bila path sudah ada.
+    """Write a **new** file; fail if the path already exists.
 
-    Memakai ``O_CREAT | O_EXCL`` sehingga tidak pernah menimpa berkas lain
-    (termasuk symlink). Jika penulisan gagal di tengah jalan, berkas parsial
-    dihapus.
+    Uses ``O_CREAT | O_EXCL`` so it never overwrites another file (including
+    symlinks). If the write fails midway, the partial file is removed.
 
     Args:
-        path (str): Path tujuan. Tidak boleh sudah ada.
-        data (bytes): Isi berkas.
-        mode (int): Permission berkas baru. Default :data:`PUBLIC_FILE_MODE`
-            (``0o644``); gunakan :data:`PRIVATE_FILE_MODE` (``0o600``) untuk kunci privat.
+        path (str): Destination path. Must not exist.
+        data (bytes): File contents.
+        mode (int): New file mode. Default :data:`PUBLIC_FILE_MODE`
+            (``0o644``); use :data:`PRIVATE_FILE_MODE` (``0o600``) for private keys.
 
     Returns:
         None
 
     Raises:
-        FileExistsError: Path sudah ada.
-        OSError: Kegagalan I/O lainnya.
+        FileExistsError: Path already exists.
+        OSError: Other I/O failure.
     """
     flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_BINARY", 0)
     fd = os.open(path, flags, mode)
@@ -78,23 +77,23 @@ def write_new(path: str, data: bytes, mode: int = PUBLIC_FILE_MODE) -> None:
         raise
 
 def write_atomic(path: str, data: bytes, mode: int = PUBLIC_FILE_MODE) -> None:
-    """Tulis atau timpa berkas secara atomik.
+    """Atomically write or overwrite a file.
 
-    Data ditulis ke berkas sementara pada direktori yang sama, di-``fsync``,
-    diberi permission ``mode``, lalu dipindahkan dengan :func:`os.replace`.
-    Pembaca lain hanya akan melihat isi lama atau isi baru secara utuh, tidak
-    pernah setengah jadi. Dipakai untuk trust store dan ``keygen --force``.
+    Data is written to a temporary file in the same directory, ``fsync``-ed,
+    given ``mode``, then moved into place with :func:`os.replace`. Readers see
+    either the complete old or the complete new contents, never a partial file.
+    Used for the trust store and ``keygen --force``.
 
     Args:
-        path (str): Path tujuan (boleh sudah ada).
-        data (bytes): Isi berkas.
-        mode (int): Permission akhir berkas. Default ``0o644``.
+        path (str): Destination path (may already exist).
+        data (bytes): File contents.
+        mode (int): Final file mode. Default ``0o644``.
 
     Returns:
         None
 
     Raises:
-        OSError: Kegagalan I/O; berkas sementara dibersihkan dan berkas lama tetap utuh.
+        OSError: I/O failure; the temporary file is removed and the old file is left intact.
     """
     directory = os.path.dirname(os.path.abspath(path))
     fd, tmp_path = tempfile.mkstemp(prefix=".tmp-", suffix=".tmp", dir=directory)

@@ -1,6 +1,6 @@
-"""Format bundle: wadah manifest canonical dan signature-nya.
+"""Bundle format: a container for the canonical manifest and its signature.
 
-Contoh isi berkas bundle::
+Example bundle file::
 
     {
       "schema": "minisign-bundle/v1",
@@ -22,29 +22,29 @@ _BUNDLE_KEYS = ["schema", "manifest_b64", "signature_b64"]
 
 @dataclass(frozen=True)
 class Bundle:
-    """Isi bundle yang sudah di-decode.
+    """Decoded bundle contents.
 
     Attributes:
-        manifest_bytes (bytes): Byte manifest canonical persis seperti yang ditandatangani.
-        signature (bytes): Byte signature mentah.
+        manifest_bytes (bytes): Canonical manifest bytes exactly as signed.
+        signature (bytes): Raw signature bytes.
     """
     manifest_bytes: bytes
     signature: bytes
 
 
 def parse_bundle(data: bytes) -> Bundle:
-    """Parse dan validasi berkas bundle.
+    """Parse and validate a bundle file.
 
     Args:
-        data (bytes): Isi berkas bundle (maks. :data:`~src.constants.MAX_BUNDLE_BYTES`).
+        data (bytes): Bundle file contents (max :data:`~src.constants.MAX_BUNDLE_BYTES`).
 
     Returns:
-        Bundle: Manifest bytes dan signature hasil decode Base64 kanonik.
-        Manifest **belum** di-parse; gunakan :func:`~src.data.manifest.parse_manifest`.
+        Bundle: Manifest bytes and signature from canonical Base64.
+        The manifest is **not** parsed; use :func:`~src.data.manifest.parse_manifest`.
 
     Raises:
-        FormatError: JSON tidak ketat, field tidak tepat, ``schema`` salah, atau
-            Base64 tidak kanonik.
+        FormatError: Non-strict JSON, wrong fields, wrong ``schema``, or
+            non-canonical Base64.
     """
     b = parse_strict(data, max_bytes=MAX_BUNDLE_BYTES)
     expect_object(b, _BUNDLE_KEYS, "bundle")
@@ -60,17 +60,17 @@ def parse_bundle(data: bytes) -> Bundle:
 
 
 def serialize_bundle(manifest_bytes: bytes, signature: bytes) -> bytes:
-    """Bentuk berkas bundle dari manifest canonical dan signature.
+    """Build a bundle file from a canonical manifest and its signature.
 
     Args:
-        manifest_bytes (bytes): Hasil :func:`~src.data.manifest.serialize_manifest`.
-        signature (bytes): Signature atas ``manifest_bytes``.
+        manifest_bytes (bytes): Output of :func:`~src.data.manifest.serialize_manifest`.
+        signature (bytes): Signature over ``manifest_bytes``.
 
     Returns:
-        bytes: JSON ASCII ber-indentasi 2 spasi diakhiri newline.
+        bytes: ASCII JSON, 2-space indented, ending with a newline.
 
     Raises:
-        FormatError: Hasil melebihi :data:`~src.constants.MAX_BUNDLE_BYTES`.
+        FormatError: Output exceeds :data:`~src.constants.MAX_BUNDLE_BYTES`.
     """
     document = {
         "schema": BUNDLE_SCHEMA,

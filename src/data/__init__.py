@@ -1,4 +1,4 @@
-"""Lapisan data: strict JSON parser, validasi Base64, manifest canonical, dan bundle."""
+"""Data layer: strict JSON parser, Base64 validation, canonical manifest, and bundle."""
 
 from src.data.b64_decoder import decode_b64_strict
 from src.data.bundle import parse_bundle

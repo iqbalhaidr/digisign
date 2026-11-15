@@ -1,7 +1,7 @@
-"""Entry point CLI ``digisign`` (``python -m src.main``).
+"""``digisign`` CLI entry point (``python -m src.main``).
 
-Mendefinisikan parser argumen dan meneruskan setiap subcommand ke fungsi
-``*_command`` yang sesuai. Kesalahan argumen selalu menghasilkan exit code ``2``.
+Defines the argument parser and dispatches each subcommand to its
+``*_command`` function. Argument errors always exit with code ``2``.
 """
 
 import argparse
@@ -69,18 +69,18 @@ def handle_trust_remove(args: argparse.Namespace) -> int:
 # =====================================================================
 
 class StrictArgumentParser(argparse.ArgumentParser):
-    """``ArgumentParser`` yang keluar dengan exit code ``2`` saat argumen tidak valid."""
+    """``ArgumentParser`` that exits with code ``2`` on invalid arguments."""
     def error(self, message: str) -> NoReturn:
         self.print_usage(sys.stderr)
         sys.stderr.write(f"{self.prog}: error: {message}\n")
         sys.exit(EXIT_USAGE_OR_IO_ERROR)
 
 def build_parser() -> argparse.ArgumentParser:
-    """Bangun parser argumen untuk seluruh subcommand.
+    """Build the argument parser for all subcommands.
 
     Returns:
-        argparse.ArgumentParser: Parser dengan subcommand ``keygen``, ``sign``,
-        ``verify``, dan ``trust {add,list,remove}``.
+        argparse.ArgumentParser: Parser with the ``keygen``, ``sign``,
+        ``verify``, and ``trust {add,list,remove}`` subcommands.
     """
     parser = StrictArgumentParser(
         prog="digisign",
@@ -118,7 +118,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_verify.add_argument("--trust-store", required=True, dest="trust_store", help="Path to trust store")
     p_verify.add_argument("--package", required=True, help="Expected package name")
     p_verify.add_argument("--version", required=True, help="Expected release version")
-    p_verify.add_argument("--json", action="store_true", help="Output verification resul")
+    p_verify.add_argument("--json", action="store_true", help="Output verification result")
     p_verify.set_defaults(func=handle_verify)
 
     # 4. trust
@@ -145,16 +145,16 @@ def build_parser() -> argparse.ArgumentParser:
 # =====================================================================
 
 def main(argv: List[str] | None = None) -> int:
-    """Jalankan CLI.
+    """Run the CLI.
 
-    Untuk ``verify --json``, kesalahan argumen atau exception tak terduga
-    tetap menghasilkan satu baris JSON berstatus ``INPUT_ERROR`` di stdout.
+    For ``verify --json``, argument errors and unexpected exceptions still
+    print a single ``INPUT_ERROR`` JSON line to stdout.
 
     Args:
-        argv (list[str] | None): Argumen tanpa nama program. Default ``sys.argv[1:]``.
+        argv (list[str] | None): Arguments without the program name. Default ``sys.argv[1:]``.
 
     Returns:
-        int: Exit code proses (``0``, ``1``, atau ``2``).
+        int: Process exit code (``0``, ``1``, or ``2``).
 
     Example:
         >>> main(["trust", "list", "--store", "trust.json"])

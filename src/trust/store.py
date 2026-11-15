@@ -1,6 +1,6 @@
-r"""Model, parsing ketat, dan penyimpanan atomik trust store.
+r"""Trust store model, strict parsing, and atomic storage.
 
-Contoh berkas trust store::
+Example trust store file::
 
     {
       "schema": "minisign-trust/v1",
@@ -32,7 +32,7 @@ from src.data.strict_json import expect_object, expect_str, parse_strict
 from src.errors import FormatError, InvalidKeyError
 from src.fileio import write_atomic
 
-#: Nilai wajib field ``schema`` pada trust store.
+#: Required value of the trust store ``schema`` field.
 TRUST_SCHEMA = "minisign-trust/v1"
 
 _STORE_KEYS = ["schema", "keys"]
@@ -40,20 +40,20 @@ _ENTRY_KEYS = ["keyid", "algorithm", "public_key_pem", "packages"]
 _WILDCARD_CHARS = "*?[]"
 
 def validate_package_name(name: object, where: str = "package") -> str:
-    """Validasi nama paket untuk trust store.
+    """Validate a package name for the trust store.
 
-    Wildcard (``*``, ``?``, ``[``, ``]``) ditolak secara eksplisit agar izin
-    paket selalu berupa pencocokan persis.
+    Wildcards (``*``, ``?``, ``[``, ``]``) are explicitly rejected so package
+    permissions are always exact matches.
 
     Args:
-        name (object): Nilai yang divalidasi.
-        where (str): Lokasi untuk pesan error.
+        name (object): Value to validate.
+        where (str): Location for error messages.
 
     Returns:
-        str: Nama paket yang valid.
+        str: Valid package name.
 
     Raises:
-        FormatError: Bukan string, mengandung wildcard, atau tidak cocok
+        FormatError: Not a string, contains a wildcard, or does not match
             :data:`~src.constants.PACKAGE_RE`.
     """
     name = expect_str(name, where)
@@ -65,13 +65,13 @@ def validate_package_name(name: object, where: str = "package") -> str:
 
 @dataclass
 class TrustEntry:
-    """Satu kunci publik tepercaya beserta daftar paket yang diizinkan.
+    """A trusted public key and its allowed packages.
 
     Attributes:
-        keyid (str): Fingerprint kunci publik.
-        algorithm (str): Profil algoritma kunci.
-        public_key (PublicKey): Objek kunci publik.
-        packages (list[str]): Nama paket yang boleh ditandatangani kunci ini.
+        keyid (str): Public key fingerprint.
+        algorithm (str): Key algorithm profile.
+        public_key (PublicKey): Public key object.
+        packages (list[str]): Packages this key may sign.
     """
     keyid: str
     algorithm: str
@@ -79,33 +79,33 @@ class TrustEntry:
     packages: list[str]
 
     def allows(self, package: str) -> bool:
-        """Periksa apakah kunci ini diizinkan untuk ``package``.
+        """Check whether this key is allowed for ``package``.
 
         Args:
-            package (str): Nama paket (pencocokan persis).
+            package (str): Package name (exact match).
 
         Returns:
-            bool: ``True`` bila ``package`` ada di :attr:`packages`.
+            bool: ``True`` if ``package`` is in :attr:`packages`.
         """
         return package in self.packages
 
 @dataclass
 class TrustStore:
-    """Kumpulan :class:`TrustEntry` dengan ``keyid`` unik.
+    """A collection of :class:`TrustEntry` with unique ``keyid`` values.
 
     Attributes:
-        entries (list[TrustEntry]): Entri sesuai urutan di berkas.
+        entries (list[TrustEntry]): Entries in file order.
     """
     entries: list[TrustEntry] = field(default_factory=list)
 
     def find(self, keyid: str) -> TrustEntry | None:
-        """Cari entri berdasarkan ``keyid``.
+        """Find an entry by ``keyid``.
 
         Args:
-            keyid (str): Fingerprint kunci.
+            keyid (str): Key fingerprint.
 
         Returns:
-            TrustEntry | None: Entri yang cocok, atau ``None``.
+            TrustEntry | None: Matching entry, or ``None``.
         """
         for entry in self.entries:
             if entry.keyid == keyid:
@@ -113,21 +113,21 @@ class TrustStore:
         return None
 
     def add(self, public_key: PublicKey, package: str) -> tuple[TrustEntry, bool]:
-        """Tambahkan izin ``package`` untuk ``public_key``.
+        """Grant ``public_key`` permission for ``package``.
 
-        Bila kunci belum ada, entri baru dibuat. Bila sudah ada, ``package``
-        ditambahkan ke daftar paketnya (idempoten).
+        Creates a new entry if the key is absent; otherwise adds ``package``
+        to its list (idempotent).
 
         Args:
-            public_key (PublicKey): Kunci publik yang dipercaya.
-            package (str): Nama paket yang diizinkan.
+            public_key (PublicKey): Public key to trust.
+            package (str): Allowed package name.
 
         Returns:
-            tuple[TrustEntry, bool]: Entri terkait dan flag apakah store berubah.
+            tuple[TrustEntry, bool]: The entry and whether the store changed.
 
         Raises:
-            FormatError: Nama paket tidak valid.
-            InvalidKeyError: Kunci tidak sesuai profil mana pun.
+            FormatError: Invalid package name.
+            InvalidKeyError: Key matches no supported profile.
 
         Example:
             >>> store = TrustStore()
@@ -151,13 +151,13 @@ class TrustStore:
         return entry, True
 
     def remove(self, keyid: str) -> bool:
-        """Hapus entri berdasarkan ``keyid``.
+        """Remove an entry by ``keyid``.
 
         Args:
-            keyid (str): Fingerprint kunci.
+            keyid (str): Key fingerprint.
 
         Returns:
-            bool: ``True`` bila entri ditemukan dan dihapus.
+            bool: ``True`` if the entry was found and removed.
         """
         entry = self.find(keyid)
         if entry is None:
@@ -166,20 +166,21 @@ class TrustStore:
         return True
 
 def parse_trust_store(data: bytes) -> TrustStore:
-    """Parse dan validasi isi berkas trust store.
+    """Parse and validate trust store file contents.
 
-    Setiap entri divalidasi: format ``keyid``, profil didukung, PEM ASCII dan
-    sesuai profil, ``keyid`` cocok dengan fingerprint PEM, ``packages`` tidak
-    kosong, tanpa duplikat, dan tanpa wildcard. ``keyid`` duplikat antar-entri ditolak.
+    Each entry is checked for: ``keyid`` format, supported profile, ASCII PEM
+    matching the profile, ``keyid`` matching the PEM fingerprint, and non-empty
+    ``packages`` without duplicates or wildcards. Duplicate ``keyid`` values
+    across entries are rejected.
 
     Args:
-        data (bytes): Isi berkas trust store.
+        data (bytes): Trust store file contents.
 
     Returns:
-        TrustStore: Trust store tervalidasi.
+        TrustStore: Validated trust store.
 
     Raises:
-        FormatError: Salah satu aturan di atas dilanggar.
+        FormatError: Any rule above is violated.
     """
     root = parse_strict(data)
     expect_object(root, _STORE_KEYS, "trust")
@@ -237,13 +238,13 @@ def _parse_packages(value: object, where: str) -> list[str]:
     return packages
 
 def serialize_trust_store(store: TrustStore) -> bytes:
-    """Serialisasi trust store ke JSON.
+    """Serialize a trust store to JSON.
 
     Args:
-        store (TrustStore): Trust store yang akan disimpan.
+        store (TrustStore): Trust store to serialize.
 
     Returns:
-        bytes: JSON ASCII ber-indentasi 2 spasi diakhiri newline.
+        bytes: ASCII JSON, 2-space indented, ending with a newline.
     """
     document = {
         "schema": TRUST_SCHEMA,
@@ -260,32 +261,32 @@ def serialize_trust_store(store: TrustStore) -> bytes:
     return (json.dumps(document, indent=2, ensure_ascii=True) + "\n").encode("ascii")
 
 def load_trust_store(path: str) -> TrustStore:
-    """Baca dan parse trust store dari berkas.
+    """Read and parse a trust store from a file.
 
     Args:
-        path (str): Path berkas trust store.
+        path (str): Trust store file path.
 
     Returns:
-        TrustStore: Trust store tervalidasi.
+        TrustStore: Validated trust store.
 
     Raises:
-        OSError: Berkas tidak dapat dibaca (``FileNotFoundError`` bila tidak ada).
-        FormatError: Isi berkas tidak valid.
+        OSError: File cannot be read (``FileNotFoundError`` if missing).
+        FormatError: Invalid file contents.
     """
     with open(path, "rb") as f:
         return parse_trust_store(f.read())
 
 def save_trust_store(store: TrustStore, path: str) -> None:
-    """Simpan trust store ke berkas secara atomik.
+    """Atomically save a trust store to a file.
 
     Args:
-        store (TrustStore): Trust store yang akan disimpan.
-        path (str): Path tujuan.
+        store (TrustStore): Trust store to save.
+        path (str): Destination path.
 
     Returns:
         None
 
     Raises:
-        OSError: Kegagalan I/O (berkas lama tetap utuh).
+        OSError: I/O failure (the old file is left intact).
     """
     write_atomic(path, serialize_trust_store(store))

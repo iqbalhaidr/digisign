@@ -1,4 +1,4 @@
-"""Modul kriptografi: profil algoritma, kunci, keyid, serta sign/verify."""
+"""Cryptography: algorithm profiles, keys, keyid, and sign/verify."""
 
 from src.crypto.keys import (
     PrivateKey,

@@ -1,8 +1,8 @@
-"""Manajemen kunci: pembangkitan, encoding PEM, parsing ketat, dan keyid.
+"""Key management: generation, PEM encoding, strict parsing, and keyid.
 
-Kunci privat disimpan sebagai **PKCS#8 PEM tanpa enkripsi**, kunci publik
-sebagai **SubjectPublicKeyInfo (SPKI) PEM**. ``keyid`` adalah SHA-256 atas DER
-SPKI kunci publik.
+Private keys are stored as **unencrypted PKCS#8 PEM**, public keys as
+**SubjectPublicKeyInfo (SPKI) PEM**. ``keyid`` is the SHA-256 of the public
+key's SPKI DER.
 """
 
 import hashlib
@@ -23,9 +23,9 @@ from src.crypto.profiles import (
 )
 from src.errors import InvalidKeyError
 
-#: Tipe kunci privat yang didukung: ``RSAPrivateKey | EllipticCurvePrivateKey | Ed25519PrivateKey``.
+#: Supported private key types: ``RSAPrivateKey | EllipticCurvePrivateKey | Ed25519PrivateKey``.
 PrivateKey = Union[rsa.RSAPrivateKey, ec.EllipticCurvePrivateKey, ed25519.Ed25519PrivateKey]
-#: Tipe kunci publik yang didukung: ``RSAPublicKey | EllipticCurvePublicKey | Ed25519PublicKey``.
+#: Supported public key types: ``RSAPublicKey | EllipticCurvePublicKey | Ed25519PublicKey``.
 PublicKey = Union[rsa.RSAPublicKey, ec.EllipticCurvePublicKey, ed25519.Ed25519PublicKey]
 
 PRIVATE_KEY_LABEL = "PRIVATE KEY"
@@ -35,17 +35,17 @@ _DER_SEQUENCE = 0x30
 _DER_INTEGER = 0x02
 
 def detect_profile(key: PrivateKey | PublicKey) -> str:
-    """Tentukan profil algoritma dari objek kunci dan validasi parameternya.
+    """Detect a key's algorithm profile and validate its parameters.
 
     Args:
-        key (PrivateKey | PublicKey): Kunci privat atau publik dari pustaka ``cryptography``.
+        key (PrivateKey | PublicKey): Private or public key from ``cryptography``.
 
     Returns:
-        str: Salah satu dari ``"rsa-pss-sha256"``, ``"ecdsa-p256-sha256"``, ``"ed25519"``.
+        str: One of ``"rsa-pss-sha256"``, ``"ecdsa-p256-sha256"``, ``"ed25519"``.
 
     Raises:
-        InvalidKeyError: RSA bukan 3072-bit atau eksponen bukan 65537, kurva EC
-            bukan P-256, atau tipe kunci tidak didukung.
+        InvalidKeyError: RSA key is not 3072-bit or exponent is not 65537, EC
+            curve is not P-256, or the key type is unsupported.
     """
     if isinstance(key, (rsa.RSAPrivateKey, rsa.RSAPublicKey)):
         public = key.public_key() if isinstance(key, rsa.RSAPrivateKey) else key
@@ -67,18 +67,18 @@ def detect_profile(key: PrivateKey | PublicKey) -> str:
 
 
 def require_profile(key: PrivateKey | PublicKey, expected: str) -> None:
-    """Pastikan kunci sesuai dengan profil yang diharapkan.
+    """Ensure a key matches the expected profile.
 
     Args:
-        key (PrivateKey | PublicKey): Kunci yang diperiksa.
-        expected (str): Nama profil yang diharapkan.
+        key (PrivateKey | PublicKey): Key to check.
+        expected (str): Expected profile name.
 
     Returns:
         None
 
     Raises:
-        UnsupportedAlgorithmError: ``expected`` bukan profil yang didukung.
-        InvalidKeyError: Profil kunci berbeda dengan ``expected`` atau parameternya tidak valid.
+        UnsupportedAlgorithmError: ``expected`` is not a supported profile.
+        InvalidKeyError: Key profile differs from ``expected`` or has invalid parameters.
     """
     require_supported(expected)
     actual = detect_profile(key)
@@ -86,17 +86,17 @@ def require_profile(key: PrivateKey | PublicKey, expected: str) -> None:
         raise InvalidKeyError(f"key profile is {actual}, expected {expected}")
 
 def generate_private_key(profile: str) -> PrivateKey:
-    """Bangkitkan kunci privat baru untuk profil tertentu.
+    """Generate a new private key for the given profile.
 
     Args:
-        profile (str): Nama profil algoritma.
+        profile (str): Algorithm profile name.
 
     Returns:
         PrivateKey: ``RSAPrivateKey`` (3072-bit, e=65537), ``EllipticCurvePrivateKey``
-        (P-256), atau ``Ed25519PrivateKey``.
+        (P-256), or ``Ed25519PrivateKey``.
 
     Raises:
-        UnsupportedAlgorithmError: Profil tidak dikenal.
+        UnsupportedAlgorithmError: Unknown profile.
 
     Example:
         >>> key = generate_private_key("ed25519")
@@ -111,16 +111,16 @@ def generate_private_key(profile: str) -> PrivateKey:
     return ed25519.Ed25519PrivateKey.generate()
 
 def private_key_to_pem(key: PrivateKey) -> bytes:
-    """Serialisasi kunci privat ke PKCS#8 PEM tanpa enkripsi.
+    """Serialize a private key to unencrypted PKCS#8 PEM.
 
     Args:
-        key (PrivateKey): Kunci privat dengan profil yang didukung.
+        key (PrivateKey): Private key with a supported profile.
 
     Returns:
-        bytes: PEM berlabel ``PRIVATE KEY``.
+        bytes: PEM labeled ``PRIVATE KEY``.
 
     Raises:
-        InvalidKeyError: Kunci tidak sesuai profil mana pun.
+        InvalidKeyError: Key matches no supported profile.
     """
     detect_profile(key)
     return key.private_bytes(
@@ -130,13 +130,13 @@ def private_key_to_pem(key: PrivateKey) -> bytes:
     )
 
 def public_key_to_der(key: PublicKey) -> bytes:
-    """Serialisasi kunci publik ke DER SubjectPublicKeyInfo.
+    """Serialize a public key to SubjectPublicKeyInfo DER.
 
     Args:
-        key (PublicKey): Kunci publik.
+        key (PublicKey): Public key.
 
     Returns:
-        bytes: Byte DER SPKI (input untuk perhitungan keyid).
+        bytes: SPKI DER bytes (input for the keyid).
     """
     return key.public_bytes(
         encoding=serialization.Encoding.DER,
@@ -144,16 +144,16 @@ def public_key_to_der(key: PublicKey) -> bytes:
     )
 
 def public_key_to_pem(key: PublicKey) -> bytes:
-    """Serialisasi kunci publik ke SPKI PEM.
+    """Serialize a public key to SPKI PEM.
 
     Args:
-        key (PublicKey): Kunci publik dengan profil yang didukung.
+        key (PublicKey): Public key with a supported profile.
 
     Returns:
-        bytes: PEM berlabel ``PUBLIC KEY``.
+        bytes: PEM labeled ``PUBLIC KEY``.
 
     Raises:
-        InvalidKeyError: Kunci tidak sesuai profil mana pun.
+        InvalidKeyError: Key matches no supported profile.
     """
     detect_profile(key)
     return key.public_bytes(
@@ -162,18 +162,18 @@ def public_key_to_pem(key: PublicKey) -> bytes:
     )
 
 def compute_keyid(public_key: PublicKey) -> str:
-    """Hitung fingerprint ``keyid`` sebuah kunci publik.
+    """Compute the ``keyid`` fingerprint of a public key.
 
     ``keyid = lowercase_hex(SHA-256(DER(SubjectPublicKeyInfo)))``
 
     Args:
-        public_key (PublicKey): Kunci publik dengan profil yang didukung.
+        public_key (PublicKey): Public key with a supported profile.
 
     Returns:
-        str: 64 karakter heksadesimal huruf kecil.
+        str: 64 lowercase hex characters.
 
     Raises:
-        InvalidKeyError: Kunci tidak sesuai profil mana pun.
+        InvalidKeyError: Key matches no supported profile.
 
     Example:
         >>> keyid = compute_keyid(generate_private_key("ed25519").public_key())
@@ -184,22 +184,22 @@ def compute_keyid(public_key: PublicKey) -> str:
     return hashlib.sha256(public_key_to_der(public_key)).hexdigest()
 
 def load_private_key_pem(data: bytes) -> PrivateKey:
-    """Muat kunci privat dari PKCS#8 PEM tanpa enkripsi secara ketat.
+    """Strictly load a private key from unencrypted PKCS#8 PEM.
 
-    Selain parsing oleh pustaka, struktur DER diperiksa harus berupa
-    ``PrivateKeyInfo`` PKCS#8 (SEQUENCE berisi INTEGER versi lalu SEQUENCE
-    AlgorithmIdentifier) tanpa byte sisa, sehingga format tradisional
-    (``RSA PRIVATE KEY``, ``EC PRIVATE KEY``) ditolak.
+    Besides library parsing, the DER must be a PKCS#8 ``PrivateKeyInfo``
+    (SEQUENCE of a version INTEGER followed by an AlgorithmIdentifier SEQUENCE)
+    with no trailing bytes, so traditional formats (``RSA PRIVATE KEY``,
+    ``EC PRIVATE KEY``) are rejected.
 
     Args:
-        data (bytes): Isi berkas ``*.key.pem``.
+        data (bytes): Contents of a ``*.key.pem`` file.
 
     Returns:
-        PrivateKey: Kunci privat yang sudah tervalidasi profilnya.
+        PrivateKey: Private key with a validated profile.
 
     Raises:
-        InvalidKeyError: PEM/DER tidak valid, terenkripsi, bukan PKCS#8, atau
-            parameter kunci tidak sesuai profil.
+        InvalidKeyError: Invalid PEM/DER, encrypted, not PKCS#8, or key
+            parameters do not match a profile.
 
     Example:
         >>> with open("release.key.pem", "rb") as f:
@@ -215,20 +215,20 @@ def load_private_key_pem(data: bytes) -> PrivateKey:
     return key
 
 def load_public_key_pem(data: bytes) -> PublicKey:
-    """Muat kunci publik dari SPKI PEM secara ketat.
+    """Strictly load a public key from SPKI PEM.
 
-    DER hasil decode harus identik dengan re-encode standar oleh pustaka;
-    encoding DER non-kanonik ditolak agar ``keyid`` selalu unik per kunci.
+    The decoded DER must equal the library's standard re-encoding;
+    non-canonical DER is rejected so each key has exactly one ``keyid``.
 
     Args:
-        data (bytes): Isi berkas ``*.pub.pem``.
+        data (bytes): Contents of a ``*.pub.pem`` file.
 
     Returns:
-        PublicKey: Kunci publik yang sudah tervalidasi profilnya.
+        PublicKey: Public key with a validated profile.
 
     Raises:
-        InvalidKeyError: PEM tidak valid, bukan SPKI, DER tidak standar, atau
-            parameter kunci tidak sesuai profil.
+        InvalidKeyError: Invalid PEM, not SPKI, non-standard DER, or key
+            parameters do not match a profile.
     """
     der = decode_pem(data, PUBLIC_KEY_LABEL)
     try:

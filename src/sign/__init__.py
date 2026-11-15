@@ -1,4 +1,4 @@
-"""Modul sign: pembentukan manifest, penandatanganan, dan subcommand ``sign``.
+"""Sign: manifest creation, signing, and the ``sign`` subcommand.
 """
 
 from src.sign.sign import create_bundle, sign_command

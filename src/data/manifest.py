@@ -1,8 +1,8 @@
-"""Model, validasi, dan serialisasi canonical manifest rilis.
+"""Release manifest model, validation, and canonical serialization.
 
-Manifest canonical adalah JSON tanpa whitespace dengan urutan field tetap
-``schema, package, version, algorithm, keyid, artifact{name, size, sha256}``
-dan hanya karakter ASCII. Byte inilah yang ditandatangani::
+The canonical manifest is ASCII-only JSON with no whitespace and a fixed
+field order ``schema, package, version, algorithm, keyid, artifact{name, size, sha256}``.
+These are the bytes that get signed::
 
     {"schema":"minisign-manifest/v1","package":"contoh-app","version":"1.0.0","algorithm":"ed25519","keyid":"<64 hex>","artifact":{"name":"contoh-app.zip","size":1234,"sha256":"<64 hex>"}}
 """
@@ -30,12 +30,12 @@ _ARTIFACT_KEYS = ["name", "size", "sha256"]
 
 @dataclass(frozen=True)
 class Artifact:
-    """Metadata artefak rilis yang dirujuk manifest.
+    """Release artifact metadata referenced by the manifest.
 
     Attributes:
-        name (str): Nama berkas (basename), cocok :data:`~src.constants.ARTIFACT_NAME_RE`.
-        size (int): Ukuran berkas dalam byte, ``0..2**53-1``.
-        sha256 (str): Digest SHA-256 berkas, 64 heksadesimal huruf kecil.
+        name (str): File basename, matching :data:`~src.constants.ARTIFACT_NAME_RE`.
+        size (int): File size in bytes, ``0..2**53-1``.
+        sha256 (str): File SHA-256 digest, 64 lowercase hex characters.
     """
     name: str
     size: int
@@ -43,15 +43,15 @@ class Artifact:
 
 @dataclass(frozen=True)
 class Manifest:
-    """Manifest rilis yang ditandatangani.
+    """Signed release manifest.
 
     Attributes:
-        package (str): Nama paket, cocok :data:`~src.constants.PACKAGE_RE`.
-        version (str): Versi rilis, cocok :data:`~src.constants.VERSION_RE`.
-        algorithm (str): Nama profil algoritma penanda tangan.
-        keyid (str): Fingerprint kunci publik penanda tangan.
-        artifact (Artifact): Metadata artefak.
-        schema (str): Selalu ``"minisign-manifest/v1"``.
+        package (str): Package name, matching :data:`~src.constants.PACKAGE_RE`.
+        version (str): Release version, matching :data:`~src.constants.VERSION_RE`.
+        algorithm (str): Signer's algorithm profile name.
+        keyid (str): Signer's public key fingerprint.
+        artifact (Artifact): Artifact metadata.
+        schema (str): Always ``"minisign-manifest/v1"``.
     """
     package: str
     version: str
@@ -68,20 +68,20 @@ def _expect_match(value: str, pattern: re.Pattern[str], where: str) -> str:
 
 
 def validate_manifest(raw: object) -> Manifest:
-    """Validasi objek JSON hasil parsing menjadi :class:`Manifest`.
+    """Validate a parsed JSON object into a :class:`Manifest`.
 
-    Memeriksa kelengkapan field (tanpa field tambahan), tipe, ``schema``, dan
-    pola setiap field. Nilai ``algorithm`` hanya dipastikan string; dukungan
-    profil diperiksa terpisah pada tahap verifikasi.
+    Checks the exact field set (no extras), types, ``schema``, and each field's
+    pattern. ``algorithm`` is only checked to be a string; profile support is
+    checked separately during verification.
 
     Args:
-        raw (object): Hasil :func:`~src.data.strict_json.parse_strict`.
+        raw (object): Output of :func:`~src.data.strict_json.parse_strict`.
 
     Returns:
-        Manifest: Objek manifest tervalidasi.
+        Manifest: Validated manifest.
 
     Raises:
-        FormatError: Struktur, tipe, atau pola field tidak sesuai.
+        FormatError: Invalid structure, type, or field pattern.
     """
     obj = expect_object(raw, _MANIFEST_KEYS, "manifest")
 
@@ -127,16 +127,16 @@ def _to_ordered_dict(m: Manifest) -> dict[str, Any]:
 
 
 def serialize_manifest(m: Manifest) -> bytes:
-    """Serialisasi :class:`Manifest` ke bentuk canonical.
+    """Serialize a :class:`Manifest` to canonical form.
 
     Args:
-        m (Manifest): Manifest yang akan diserialisasi (divalidasi ulang dulu).
+        m (Manifest): Manifest to serialize (re-validated first).
 
     Returns:
-        bytes: JSON ASCII tanpa whitespace dengan urutan field tetap.
+        bytes: ASCII JSON with no whitespace and a fixed field order.
 
     Raises:
-        FormatError: Field tidak valid atau hasil melebihi 16 KiB.
+        FormatError: Invalid field or output exceeds 16 KiB.
 
     Example:
         >>> m = Manifest("contoh-app", "1.0.0", "ed25519", "0" * 64,
@@ -156,20 +156,20 @@ def serialize_manifest(m: Manifest) -> bytes:
 
 
 def parse_manifest(data: bytes) -> Manifest:
-    """Parse byte manifest dan pastikan sudah dalam bentuk canonical.
+    """Parse manifest bytes and ensure they are canonical.
 
-    Setelah divalidasi, manifest diserialisasi ulang dan dibandingkan byte per
-    byte dengan input; perbedaan sekecil apa pun (spasi, urutan field, escape
-    Unicode) ditolak.
+    After validation, the manifest is re-serialized and compared byte for byte
+    with the input; any difference (whitespace, field order, Unicode escapes)
+    is rejected.
 
     Args:
-        data (bytes): Byte manifest dari bundle.
+        data (bytes): Manifest bytes from the bundle.
 
     Returns:
-        Manifest: Objek manifest tervalidasi.
+        Manifest: Validated manifest.
 
     Raises:
-        FormatError: JSON tidak ketat, field tidak valid, atau bukan canonical.
+        FormatError: Non-strict JSON, invalid field, or not canonical.
     """
     m = validate_manifest(parse_strict(data, max_bytes=MAX_MANIFEST_BYTES))
 

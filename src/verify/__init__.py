@@ -1,4 +1,4 @@
-"""Modul verify: hasil verifikasi (status, exit code) dan 8 tahap pemeriksaan rilis."""
+"""Verify: verification results (status, exit code) and the 8-step release check."""
 
 from src.verify.result import (
     ARTIFACT_MISMATCH,

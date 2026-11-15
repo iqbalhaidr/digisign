@@ -1,4 +1,4 @@
-"""Modul trust store: format, validasi, penyimpanan atomik, dan subcommand trust."""
+"""Trust store: format, validation, atomic storage, and the trust subcommands."""
 
 from src.trust.commands import trust_add, trust_list, trust_remove
 from src.trust.store import (

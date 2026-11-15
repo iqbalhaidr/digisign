@@ -1,16 +1,16 @@
-"""Status hasil verifikasi dan pemetaannya ke exit code.
+"""Verification statuses and their exit codes.
 
 ========================= ========= ==================================================
-Status                    Exit code Arti
+Status                    Exit code Meaning
 ========================= ========= ==================================================
-``OK``                    0         Signature dan artefak valid
-``FORMAT_ERROR``          1         Bundle/manifest/trust store tidak sesuai format
-``UNSUPPORTED_ALGORITHM`` 1         Profil algoritma manifest tidak dikenal
-``KEY_NOT_TRUSTED``       1         Kunci tidak tepercaya untuk paket tersebut
-``INVALID_SIGNATURE``     1         Signature tidak cocok dengan manifest
-``METADATA_MISMATCH``     1         Paket, versi, atau nama artefak berbeda
-``ARTIFACT_MISMATCH``     1         Ukuran atau SHA-256 artefak berbeda
-``INPUT_ERROR``           2         Berkas tidak dapat dibaca / argumen CLI salah
+``OK``                    0         Signature and artifact are valid
+``FORMAT_ERROR``          1         Malformed bundle, manifest, or trust store
+``UNSUPPORTED_ALGORITHM`` 1         Unknown manifest algorithm profile
+``KEY_NOT_TRUSTED``       1         Key is not trusted for the package
+``INVALID_SIGNATURE``     1         Signature does not match the manifest
+``METADATA_MISMATCH``     1         Package, version, or artifact name differs
+``ARTIFACT_MISMATCH``     1         Artifact size or SHA-256 differs
+``INPUT_ERROR``           2         Unreadable file or invalid CLI arguments
 ========================= ========= ==================================================
 """
 
@@ -30,7 +30,7 @@ EXIT_OK = 0
 EXIT_REJECTED = 1
 EXIT_INPUT_ERROR = 2
 
-#: Pemetaan status verifikasi ke exit code CLI.
+#: Maps each verification status to its CLI exit code.
 EXIT_CODES: dict[str, int] = {
     OK: EXIT_OK,
     FORMAT_ERROR: EXIT_REJECTED,
@@ -44,18 +44,18 @@ EXIT_CODES: dict[str, int] = {
 
 @dataclass(frozen=True)
 class VerifyResult:
-    """Hasil akhir verifikasi rilis (immutable).
+    """Final release verification result (immutable).
 
     Attributes:
-        status (str): Salah satu konstanta status di modul ini.
-        message (str): Penjelasan singkat yang dapat dibaca manusia.
-        algorithm (str | None): Profil algoritma dari manifest, bila sudah ter-parse.
-        keyid (str | None): ``keyid`` dari manifest, bila sudah ter-parse.
-        package (str | None): Nama paket dari manifest, bila sudah ter-parse.
-        version (str | None): Versi dari manifest, bila sudah ter-parse.
+        status (str): One of this module's status constants.
+        message (str): Short human-readable explanation.
+        algorithm (str | None): Manifest algorithm profile, if parsed.
+        keyid (str | None): Manifest ``keyid``, if parsed.
+        package (str | None): Manifest package name, if parsed.
+        version (str | None): Manifest version, if parsed.
 
     Raises:
-        ValueError: ``status`` tidak dikenal.
+        ValueError: Unknown ``status``.
     """
     status: str
     message: str
@@ -70,20 +70,20 @@ class VerifyResult:
 
     @property
     def valid(self) -> bool:
-        """bool: ``True`` hanya bila :attr:`status` adalah ``OK``."""
+        """bool: ``True`` only if :attr:`status` is ``OK``."""
         return self.status == OK
 
     @property
     def exit_code(self) -> int:
-        """int: Exit code CLI untuk :attr:`status` (lihat :data:`EXIT_CODES`)."""
+        """int: CLI exit code for :attr:`status` (see :data:`EXIT_CODES`)."""
         return EXIT_CODES[self.status]
 
     def to_json(self) -> str:
-        r"""Serialisasi hasil ke satu baris JSON (keluaran ``verify --json``).
+        r"""Serialize the result to a single JSON line (``verify --json`` output).
 
         Returns:
-            str: JSON ASCII dengan field ``valid``, ``status``, ``message``,
-            ``algorithm``, ``keyid``, ``package``, ``version`` diakhiri newline.
+            str: ASCII JSON with ``valid``, ``status``, ``message``,
+            ``algorithm``, ``keyid``, ``package``, ``version``, ending with a newline.
 
         Example:
             >>> VerifyResult("KEY_NOT_TRUSTED", "keyid is not in the trust store").to_json()
