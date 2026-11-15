@@ -12,7 +12,7 @@ from src.verify.result import (
     UNSUPPORTED_ALGORITHM,
     VerifyResult,
 )
-from src.verify.verify import verify_command, verify_release
+from src.verify.verify import verify_command, verify_release, verify_release_detailed
 
 __all__ = [
     "ARTIFACT_MISMATCH",
@@ -27,4 +27,5 @@ __all__ = [
     "VerifyResult",
     "verify_command",
     "verify_release",
+    "verify_release_detailed",
 ]

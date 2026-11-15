@@ -13,6 +13,7 @@ Tautan **[source]** menuju implementasinya.
 | [Verify](verify.md) | `src.verify.verify`, `src.verify.result` |
 | [Trust store](trust.md) | `src.trust.store`, `src.trust.commands` |
 | [Kriptografi](crypto.md) | `src.crypto.profiles`, `src.crypto.keys`, `src.crypto.signature`, `src.crypto.pem` |
+| [Signed SBOM](sbom.md) | `src.sbom.document`, `src.sbom.verify`, `src.sbom.commands` |
 | [Data](data.md) | `src.data.strict_json`, `src.data.b64_decoder`, `src.data.manifest`, `src.data.bundle` |
 | [Utilitas](utils.md) | `src.fileio`, `src.errors`, `src.constants` |
 
@@ -24,6 +25,7 @@ keygen
 sign
 verify
 trust
+sbom
 crypto
 data
 utils

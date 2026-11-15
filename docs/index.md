@@ -15,6 +15,7 @@ lapisan di bawahnya, sehingga setiap modul dapat dipakai langsung dari kode Pyth
 | ------- | ----- | -------------- |
 | CLI | {mod}`src.main` | Parsing argumen, pemetaan subcommand → fungsi, exit code |
 | Subcommand | {mod}`src.keygen`, {mod}`src.sign`, {mod}`src.verify`, {mod}`src.trust` | Logika tiap perintah: `keygen`, `sign`, `verify`, `trust add/list/remove` |
+| Bonus | {mod}`src.sbom` | Signed SBOM: `sbom generate/sign/verify/check` |
 | Kriptografi | {mod}`src.crypto` | Profil algoritma, kunci PKCS#8/SPKI, `keyid`, sign/verify |
 | Data | {mod}`src.data` | Parser JSON ketat, Base64 kanonik, manifest canonical, bundle |
 | Utilitas | {mod}`src.fileio`, {mod}`src.errors`, {mod}`src.constants` | I/O aman, hierarki exception, konstanta dan pola validasi |
@@ -43,6 +44,7 @@ INVALID_SIGNATURE → METADATA_MISMATCH → ARTIFACT_MISMATCH → OK`.
 ## Cara membaca dokumentasi
 
 - **[Contoh Penggunaan](usage.md)** — skenario lengkap memakai API dari Python dan padanannya di CLI.
+- **[Signed SBOM](sbom.md)** — format SBOM, parameter dan keluaran subcommand `sbom`, aturan keterikatan, dan pengujian.
 - **[Format Berkas & Profil](formats.md)** — format manifest, bundle, trust store, dan pemetaan profil algoritma ke API pustaka `cryptography`.
 - **[Error & Exit Code](errors.md)** — hierarki exception, status verifikasi, dan exit code.
 - **[Referensi API](api/index.md)** — dokumentasi tiap modul, dihasilkan otomatis dari docstring.
@@ -58,6 +60,7 @@ kunci RSA/EC/Ed25519 dari pustaka
 :maxdepth: 2
 
 usage
+sbom
 formats
 errors
 api/index

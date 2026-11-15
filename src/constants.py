@@ -6,6 +6,9 @@ string harus cocok secara utuh (tanpa anchor ``^``/``$``).
 
 import re
 
+#: Versi program (ditampilkan ``--version`` dan dicatat sebagai tool pada SBOM).
+PROGRAM_VERSION = "1.0.0"
+
 #: Nilai wajib field ``schema`` pada manifest.
 MANIFEST_SCHEMA = "minisign-manifest/v1"
 #: Nilai wajib field ``schema`` pada bundle.

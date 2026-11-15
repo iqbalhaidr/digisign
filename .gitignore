@@ -11,3 +11,5 @@ docs/_build/
 
 Spesifikasi.pdf
 Tugas.pdf
+# Berkas kerja pengujian SBOM (dibuat ulang tiap run)
+test/sbom/out/

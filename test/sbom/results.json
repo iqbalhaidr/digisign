@@ -1,0 +1,569 @@
+[
+  {
+    "id": "S01-rsa-pss-sha256",
+    "scenario": "Rilis + SBOM sah (rsa-pss-sha256): sbom verify dan sbom check berhasil",
+    "pass": true,
+    "checks": [
+      {
+        "expected": {
+          "exit": 0,
+          "status": "OK",
+          "stage": null
+        },
+        "actual": {
+          "command": "sbom verify",
+          "exit": 0,
+          "status": "OK",
+          "stage": null,
+          "valid": true,
+          "message": "SBOM signature and content are valid."
+        },
+        "pass": true
+      },
+      {
+        "expected": {
+          "exit": 0,
+          "status": "OK",
+          "stage": null
+        },
+        "actual": {
+          "command": "sbom check",
+          "exit": 0,
+          "status": "OK",
+          "stage": null,
+          "valid": true,
+          "message": "Release and SBOM are valid and bound to the same artifact."
+        },
+        "pass": true
+      }
+    ]
+  },
+  {
+    "id": "S01-ecdsa-p256-sha256",
+    "scenario": "Rilis + SBOM sah (ecdsa-p256-sha256): sbom verify dan sbom check berhasil",
+    "pass": true,
+    "checks": [
+      {
+        "expected": {
+          "exit": 0,
+          "status": "OK",
+          "stage": null
+        },
+        "actual": {
+          "command": "sbom verify",
+          "exit": 0,
+          "status": "OK",
+          "stage": null,
+          "valid": true,
+          "message": "SBOM signature and content are valid."
+        },
+        "pass": true
+      },
+      {
+        "expected": {
+          "exit": 0,
+          "status": "OK",
+          "stage": null
+        },
+        "actual": {
+          "command": "sbom check",
+          "exit": 0,
+          "status": "OK",
+          "stage": null,
+          "valid": true,
+          "message": "Release and SBOM are valid and bound to the same artifact."
+        },
+        "pass": true
+      }
+    ]
+  },
+  {
+    "id": "S01-ed25519",
+    "scenario": "Rilis + SBOM sah (ed25519): sbom verify dan sbom check berhasil",
+    "pass": true,
+    "checks": [
+      {
+        "expected": {
+          "exit": 0,
+          "status": "OK",
+          "stage": null
+        },
+        "actual": {
+          "command": "sbom verify",
+          "exit": 0,
+          "status": "OK",
+          "stage": null,
+          "valid": true,
+          "message": "SBOM signature and content are valid."
+        },
+        "pass": true
+      },
+      {
+        "expected": {
+          "exit": 0,
+          "status": "OK",
+          "stage": null
+        },
+        "actual": {
+          "command": "sbom check",
+          "exit": 0,
+          "status": "OK",
+          "stage": null,
+          "valid": true,
+          "message": "Release and SBOM are valid and bound to the same artifact."
+        },
+        "pass": true
+      }
+    ]
+  },
+  {
+    "id": "S02",
+    "scenario": "Isi SBOM diubah setelah ditandatangani: satu karakter hash komponen diganti (ukuran tetap)",
+    "pass": true,
+    "checks": [
+      {
+        "expected": {
+          "exit": 1,
+          "status": "ARTIFACT_MISMATCH",
+          "stage": null
+        },
+        "actual": {
+          "command": "sbom verify",
+          "exit": 1,
+          "status": "ARTIFACT_MISMATCH",
+          "stage": null,
+          "valid": false,
+          "message": "artifact SHA-256 differs from the manifest"
+        },
+        "pass": true
+      },
+      {
+        "expected": {
+          "exit": 1,
+          "status": "ARTIFACT_MISMATCH",
+          "stage": "sbom"
+        },
+        "actual": {
+          "command": "sbom check",
+          "exit": 1,
+          "status": "ARTIFACT_MISMATCH",
+          "stage": "sbom",
+          "valid": false,
+          "message": "sbom: artifact SHA-256 differs from the manifest"
+        },
+        "pass": true
+      }
+    ]
+  },
+  {
+    "id": "S03",
+    "scenario": "Isi SBOM diubah: hash metadata.component diganti ke SHA-256 artefak pengganti",
+    "pass": true,
+    "checks": [
+      {
+        "expected": {
+          "exit": 1,
+          "status": "ARTIFACT_MISMATCH",
+          "stage": null
+        },
+        "actual": {
+          "command": "sbom verify",
+          "exit": 1,
+          "status": "ARTIFACT_MISMATCH",
+          "stage": null,
+          "valid": false,
+          "message": "artifact SHA-256 differs from the manifest"
+        },
+        "pass": true
+      },
+      {
+        "expected": {
+          "exit": 1,
+          "status": "ARTIFACT_MISMATCH",
+          "stage": "sbom"
+        },
+        "actual": {
+          "command": "sbom check",
+          "exit": 1,
+          "status": "ARTIFACT_MISMATCH",
+          "stage": "sbom",
+          "valid": false,
+          "message": "sbom: artifact SHA-256 differs from the manifest"
+        },
+        "pass": true
+      }
+    ]
+  },
+  {
+    "id": "S04",
+    "scenario": "Isi SBOM diubah: komponen baru ditambahkan (ukuran berubah)",
+    "pass": true,
+    "checks": [
+      {
+        "expected": {
+          "exit": 1,
+          "status": "ARTIFACT_MISMATCH",
+          "stage": null
+        },
+        "actual": {
+          "command": "sbom verify",
+          "exit": 1,
+          "status": "ARTIFACT_MISMATCH",
+          "stage": null,
+          "valid": false,
+          "message": "artifact size differs from the manifest"
+        },
+        "pass": true
+      },
+      {
+        "expected": {
+          "exit": 1,
+          "status": "ARTIFACT_MISMATCH",
+          "stage": "sbom"
+        },
+        "actual": {
+          "command": "sbom check",
+          "exit": 1,
+          "status": "ARTIFACT_MISMATCH",
+          "stage": "sbom",
+          "valid": false,
+          "message": "sbom: artifact size differs from the manifest"
+        },
+        "pass": true
+      }
+    ]
+  },
+  {
+    "id": "S05",
+    "scenario": "Artefak rilis diganti, bundle rilis lama dipakai",
+    "pass": true,
+    "checks": [
+      {
+        "expected": {
+          "exit": 0,
+          "status": "OK",
+          "stage": null
+        },
+        "actual": {
+          "command": "sbom verify",
+          "exit": 0,
+          "status": "OK",
+          "stage": null,
+          "valid": true,
+          "message": "SBOM signature and content are valid."
+        },
+        "pass": true
+      },
+      {
+        "expected": {
+          "exit": 1,
+          "status": "ARTIFACT_MISMATCH",
+          "stage": "release"
+        },
+        "actual": {
+          "command": "sbom check",
+          "exit": 1,
+          "status": "ARTIFACT_MISMATCH",
+          "stage": "release",
+          "valid": false,
+          "message": "release: artifact size differs from the manifest"
+        },
+        "pass": true
+      }
+    ]
+  },
+  {
+    "id": "S06",
+    "scenario": "Artefak rilis diganti dan rilis ditandatangani ulang dengan kunci sah, SBOM lama tetap dipakai",
+    "pass": true,
+    "checks": [
+      {
+        "expected": {
+          "exit": 0,
+          "status": "OK",
+          "stage": null
+        },
+        "actual": {
+          "command": "sbom verify",
+          "exit": 0,
+          "status": "OK",
+          "stage": null,
+          "valid": true,
+          "message": "SBOM signature and content are valid."
+        },
+        "pass": true
+      },
+      {
+        "expected": {
+          "exit": 1,
+          "status": "SBOM_MISMATCH",
+          "stage": "binding"
+        },
+        "actual": {
+          "command": "sbom check",
+          "exit": 1,
+          "status": "SBOM_MISMATCH",
+          "stage": "binding",
+          "valid": false,
+          "message": "SBOM does not reference the SHA-256 of the release artifact"
+        },
+        "pass": true
+      }
+    ]
+  },
+  {
+    "id": "S07",
+    "scenario": "Artefak rilis diganti, SBOM baru dibuat dan ditandatangani kunci yang tidak tepercaya",
+    "pass": true,
+    "checks": [
+      {
+        "expected": {
+          "exit": 1,
+          "status": "KEY_NOT_TRUSTED",
+          "stage": null
+        },
+        "actual": {
+          "command": "sbom verify",
+          "exit": 1,
+          "status": "KEY_NOT_TRUSTED",
+          "stage": null,
+          "valid": false,
+          "message": "keyid is not in the trust store"
+        },
+        "pass": true
+      },
+      {
+        "expected": {
+          "exit": 1,
+          "status": "KEY_NOT_TRUSTED",
+          "stage": "sbom"
+        },
+        "actual": {
+          "command": "sbom check",
+          "exit": 1,
+          "status": "KEY_NOT_TRUSTED",
+          "stage": "sbom",
+          "valid": false,
+          "message": "sbom: keyid is not in the trust store"
+        },
+        "pass": true
+      }
+    ]
+  },
+  {
+    "id": "S08",
+    "scenario": "sbom sign menolak SBOM yang tidak memuat SHA-256 artefak (artefak diganti setelah SBOM dibuat)",
+    "pass": true,
+    "checks": [
+      {
+        "expected": {
+          "exit": 2,
+          "status": null,
+          "stage": null
+        },
+        "actual": {
+          "command": "sbom sign",
+          "exit": 2,
+          "status": null,
+          "stage": null,
+          "valid": null,
+          "message": "error: SBOM does not reference the SHA-256 of the release artifact | bundle written: False"
+        },
+        "pass": true
+      }
+    ]
+  },
+  {
+    "id": "S09",
+    "scenario": "sbom sign menolak --version yang berbeda dari versi pada SBOM",
+    "pass": true,
+    "checks": [
+      {
+        "expected": {
+          "exit": 2,
+          "status": null,
+          "stage": null
+        },
+        "actual": {
+          "command": "sbom sign",
+          "exit": 2,
+          "status": null,
+          "stage": null,
+          "valid": null,
+          "message": "error: SBOM component version '1.0.0' differs from version '1.0.1'"
+        },
+        "pass": true
+      }
+    ]
+  },
+  {
+    "id": "S10",
+    "scenario": "Berkas JSON non-SBOM ditandatangani dengan sign biasa lalu diverifikasi sebagai SBOM",
+    "pass": true,
+    "checks": [
+      {
+        "expected": {
+          "exit": 1,
+          "status": "FORMAT_ERROR",
+          "stage": null
+        },
+        "actual": {
+          "command": "sbom verify",
+          "exit": 1,
+          "status": "FORMAT_ERROR",
+          "stage": null,
+          "valid": false,
+          "message": "sbom.bomFormat: must be CycloneDX"
+        },
+        "pass": true
+      },
+      {
+        "expected": {
+          "exit": 1,
+          "status": "FORMAT_ERROR",
+          "stage": "sbom"
+        },
+        "actual": {
+          "command": "sbom check",
+          "exit": 1,
+          "status": "FORMAT_ERROR",
+          "stage": "sbom",
+          "valid": false,
+          "message": "sbom: sbom.bomFormat: must be CycloneDX"
+        },
+        "pass": true
+      }
+    ]
+  },
+  {
+    "id": "S11",
+    "scenario": "SBOM dengan field duplikat ditandatangani dengan sign biasa (strict JSON)",
+    "pass": true,
+    "checks": [
+      {
+        "expected": {
+          "exit": 1,
+          "status": "FORMAT_ERROR",
+          "stage": null
+        },
+        "actual": {
+          "command": "sbom verify",
+          "exit": 1,
+          "status": "FORMAT_ERROR",
+          "stage": null,
+          "valid": false,
+          "message": "duplicate key: 'bomFormat'"
+        },
+        "pass": true
+      }
+    ]
+  },
+  {
+    "id": "S12",
+    "scenario": "Bundle rilis tertukar dipakai sebagai --sbom-bundle",
+    "pass": true,
+    "checks": [
+      {
+        "expected": {
+          "exit": 1,
+          "status": "METADATA_MISMATCH",
+          "stage": "sbom"
+        },
+        "actual": {
+          "command": "sbom check",
+          "exit": 1,
+          "status": "METADATA_MISMATCH",
+          "stage": "sbom",
+          "valid": false,
+          "message": "sbom: artifact name mismatch: manifest has 'contoh-app.zip'"
+        },
+        "pass": true
+      }
+    ]
+  },
+  {
+    "id": "S13",
+    "scenario": "Kunci SBOM hanya diizinkan untuk paket lain",
+    "pass": true,
+    "checks": [
+      {
+        "expected": {
+          "exit": 1,
+          "status": "KEY_NOT_TRUSTED",
+          "stage": null
+        },
+        "actual": {
+          "command": "sbom verify",
+          "exit": 1,
+          "status": "KEY_NOT_TRUSTED",
+          "stage": null,
+          "valid": false,
+          "message": "key is not allowed for package 'contoh-app'"
+        },
+        "pass": true
+      }
+    ]
+  },
+  {
+    "id": "S14",
+    "scenario": "Berkas SBOM tidak ada",
+    "pass": true,
+    "checks": [
+      {
+        "expected": {
+          "exit": 2,
+          "status": "INPUT_ERROR",
+          "stage": null
+        },
+        "actual": {
+          "command": "sbom verify",
+          "exit": 2,
+          "status": "INPUT_ERROR",
+          "stage": null,
+          "valid": false,
+          "message": "cannot read input: [Errno 2] No such file or directory: 'test/sbom/out/S14/missing.cdx.json'"
+        },
+        "pass": true
+      },
+      {
+        "expected": {
+          "exit": 2,
+          "status": "INPUT_ERROR",
+          "stage": "sbom"
+        },
+        "actual": {
+          "command": "sbom check",
+          "exit": 2,
+          "status": "INPUT_ERROR",
+          "stage": "sbom",
+          "valid": false,
+          "message": "sbom: cannot read input: [Errno 2] No such file or directory: 'test/sbom/out/S14/missing.cdx.json'"
+        },
+        "pass": true
+      }
+    ]
+  },
+  {
+    "id": "S15",
+    "scenario": "Kompatibilitas format: SBOM + bundle SBOM diverifikasi dengan verify biasa",
+    "pass": true,
+    "checks": [
+      {
+        "expected": {
+          "exit": 0,
+          "status": "OK",
+          "stage": null
+        },
+        "actual": {
+          "command": "verify",
+          "exit": 0,
+          "status": "OK",
+          "stage": null,
+          "valid": true,
+          "message": "Signature and artifact are valid."
+        },
+        "pass": true
+      }
+    ]
+  }
+]
