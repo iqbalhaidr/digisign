@@ -1,4 +1,4 @@
-# Keygen — src.keygen
+# src.keygen
 
 ```{eval-rst}
 .. automodule:: src.keygen

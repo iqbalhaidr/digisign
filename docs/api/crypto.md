@@ -1,4 +1,4 @@
-# Kriptografi — src.crypto
+# src.crypto
 
 ```{eval-rst}
 .. automodule:: src.crypto

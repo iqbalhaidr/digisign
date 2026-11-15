@@ -1,4 +1,4 @@
-# Sign — src.sign
+# src.sign
 
 ```{eval-rst}
 .. automodule:: src.sign

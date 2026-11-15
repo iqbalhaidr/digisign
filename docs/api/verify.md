@@ -1,4 +1,4 @@
-# Verify — src.verify
+# src.verify
 
 ```{eval-rst}
 .. automodule:: src.verify

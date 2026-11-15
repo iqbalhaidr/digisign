@@ -1,4 +1,4 @@
-# Data — src.data
+# src.data
 
 ```{eval-rst}
 .. automodule:: src.data

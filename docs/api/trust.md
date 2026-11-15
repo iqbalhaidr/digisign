@@ -1,4 +1,4 @@
-# Trust store — src.trust
+# src.trust
 
 ```{eval-rst}
 .. automodule:: src.trust

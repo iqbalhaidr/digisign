@@ -1,4 +1,4 @@
-# Utilitas — fileio, errors, constants
+# fileio, errors, constants
 
 ## `src.fileio`
 

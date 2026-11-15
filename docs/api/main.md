@@ -1,4 +1,4 @@
-# CLI — src.main
+# src.main
 
 ## `src.main`
 
