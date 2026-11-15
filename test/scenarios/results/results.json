@@ -1,10 +1,10 @@
 {
+  "title": "Hasil Skenario Uji U01-U14",
   "environment": {
-    "Waktu (UTC)": "2026-11-15 11:34:06",
+    "Waktu (UTC)": "2026-11-15 14:13:10",
     "OS": "Windows-11-10.0.26200-SP0",
-    "Python": "3.12.10",
-    "cryptography": "50.0.1",
-    "OpenSSL CLI": "OpenSSL 3.2.2 4 Jun 2024 (Library: OpenSSL 3.2.2 4 Jun 2024)"
+    "Python": "3.14.4",
+    "cryptography": "50.0.2"
   },
   "cases": [
     {
@@ -14,7 +14,8 @@
       "expected": "OK (exit 0)",
       "actual": "OK (exit 0)",
       "passed": true,
-      "evidence": "test/scenarios/results/U01"
+      "evidence": "test/scenarios/results/U01",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app.txt --bundle test/scenarios/results/U01/rsa-pss-sha256-teks.json --trust-store test/scenarios/results/U01/trust.json --package contoh-app --version 1.0.0 --json"
     },
     {
       "id": "U01",
@@ -23,7 +24,8 @@
       "expected": "OK (exit 0)",
       "actual": "OK (exit 0)",
       "passed": true,
-      "evidence": "test/scenarios/results/U01"
+      "evidence": "test/scenarios/results/U01",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U01/rsa-pss-sha256-biner.json --trust-store test/scenarios/results/U01/trust.json --package contoh-app --version 1.0.0 --json"
     },
     {
       "id": "U01",
@@ -32,7 +34,8 @@
       "expected": "OK (exit 0)",
       "actual": "OK (exit 0)",
       "passed": true,
-      "evidence": "test/scenarios/results/U01"
+      "evidence": "test/scenarios/results/U01",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app-empty.txt --bundle test/scenarios/results/U01/rsa-pss-sha256-kosong.json --trust-store test/scenarios/results/U01/trust.json --package contoh-app --version 1.0.0 --json"
     },
     {
       "id": "U01",
@@ -41,7 +44,8 @@
       "expected": "OK (exit 0)",
       "actual": "OK (exit 0)",
       "passed": true,
-      "evidence": "test/scenarios/results/U01"
+      "evidence": "test/scenarios/results/U01",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app.txt --bundle test/scenarios/results/U01/ecdsa-p256-sha256-teks.json --trust-store test/scenarios/results/U01/trust.json --package contoh-app --version 1.0.0 --json"
     },
     {
       "id": "U01",
@@ -50,7 +54,8 @@
       "expected": "OK (exit 0)",
       "actual": "OK (exit 0)",
       "passed": true,
-      "evidence": "test/scenarios/results/U01"
+      "evidence": "test/scenarios/results/U01",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U01/ecdsa-p256-sha256-biner.json --trust-store test/scenarios/results/U01/trust.json --package contoh-app --version 1.0.0 --json"
     },
     {
       "id": "U01",
@@ -59,7 +64,8 @@
       "expected": "OK (exit 0)",
       "actual": "OK (exit 0)",
       "passed": true,
-      "evidence": "test/scenarios/results/U01"
+      "evidence": "test/scenarios/results/U01",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app-empty.txt --bundle test/scenarios/results/U01/ecdsa-p256-sha256-kosong.json --trust-store test/scenarios/results/U01/trust.json --package contoh-app --version 1.0.0 --json"
     },
     {
       "id": "U01",
@@ -68,7 +74,8 @@
       "expected": "OK (exit 0)",
       "actual": "OK (exit 0)",
       "passed": true,
-      "evidence": "test/scenarios/results/U01"
+      "evidence": "test/scenarios/results/U01",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app.txt --bundle test/scenarios/results/U01/ed25519-teks.json --trust-store test/scenarios/results/U01/trust.json --package contoh-app --version 1.0.0 --json"
     },
     {
       "id": "U01",
@@ -77,7 +84,8 @@
       "expected": "OK (exit 0)",
       "actual": "OK (exit 0)",
       "passed": true,
-      "evidence": "test/scenarios/results/U01"
+      "evidence": "test/scenarios/results/U01",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U01/ed25519-biner.json --trust-store test/scenarios/results/U01/trust.json --package contoh-app --version 1.0.0 --json"
     },
     {
       "id": "U01",
@@ -86,7 +94,58 @@
       "expected": "OK (exit 0)",
       "actual": "OK (exit 0)",
       "passed": true,
-      "evidence": "test/scenarios/results/U01"
+      "evidence": "test/scenarios/results/U01",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app-empty.txt --bundle test/scenarios/results/U01/ed25519-kosong.json --trust-store test/scenarios/results/U01/trust.json --package contoh-app --version 1.0.0 --json"
+    },
+    {
+      "id": "U02",
+      "profile": "ed25519",
+      "description": "Kontrol: artefak asli",
+      "expected": "OK (exit 0)",
+      "actual": "OK (exit 0)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U02",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U02/bundle.json --trust-store test/scenarios/results/U02/trust.json --package contoh-app --version 1.0.0 --json"
+    },
+    {
+      "id": "U02",
+      "profile": "ed25519",
+      "description": "Satu byte artefak (ke-2048) diubah, ukuran dan nama berkas tetap",
+      "expected": "ARTIFACT_MISMATCH (exit 1)",
+      "actual": "ARTIFACT_MISMATCH (exit 1)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U02",
+      "command": "digisign verify --file test/scenarios/results/U02/ubah-byte/contoh-app.bin --bundle test/scenarios/results/U02/bundle.json --trust-store test/scenarios/results/U02/trust.json --package contoh-app --version 1.0.0 --json"
+    },
+    {
+      "id": "U03",
+      "profile": "ed25519",
+      "description": "Satu byte ditambahkan di akhir artefak",
+      "expected": "ARTIFACT_MISMATCH (exit 1)",
+      "actual": "ARTIFACT_MISMATCH (exit 1)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U03",
+      "command": "digisign verify --file test/scenarios/results/U03/tambah-byte/contoh-app.bin --bundle test/scenarios/results/U03/bundle.json --trust-store test/scenarios/results/U03/trust.json --package contoh-app --version 1.0.0 --json"
+    },
+    {
+      "id": "U03",
+      "profile": "ed25519",
+      "description": "Satu byte dihapus dari akhir artefak",
+      "expected": "ARTIFACT_MISMATCH (exit 1)",
+      "actual": "ARTIFACT_MISMATCH (exit 1)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U03",
+      "command": "digisign verify --file test/scenarios/results/U03/hapus-byte/contoh-app.bin --bundle test/scenarios/results/U03/bundle.json --trust-store test/scenarios/results/U03/trust.json --package contoh-app --version 1.0.0 --json"
+    },
+    {
+      "id": "U04",
+      "profile": "ed25519",
+      "description": "Versi manifest diubah menjadi 1.0.1, tanda tangan lama",
+      "expected": "INVALID_SIGNATURE (exit 1)",
+      "actual": "INVALID_SIGNATURE (exit 1)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U04",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U04/bundle-versi-diubah.json --trust-store test/scenarios/results/U04/trust.json --package contoh-app --version 1.0.1 --json"
     },
     {
       "id": "U05",
@@ -95,7 +154,8 @@
       "expected": "OK (exit 0)",
       "actual": "OK (exit 0)",
       "passed": true,
-      "evidence": "test/scenarios/results/U05"
+      "evidence": "test/scenarios/results/U05",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U05/rsa-pss-sha256.json --trust-store test/scenarios/results/U05/trust.json --package contoh-app --version 1.0.0 --json"
     },
     {
       "id": "U05",
@@ -104,7 +164,8 @@
       "expected": "INVALID_SIGNATURE (exit 1)",
       "actual": "INVALID_SIGNATURE (exit 1)",
       "passed": true,
-      "evidence": "test/scenarios/results/U05"
+      "evidence": "test/scenarios/results/U05",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U05/rsa-pss-sha256-bitflip.json --trust-store test/scenarios/results/U05/trust.json --package contoh-app --version 1.0.0 --json"
     },
     {
       "id": "U05",
@@ -113,7 +174,8 @@
       "expected": "OK (exit 0)",
       "actual": "OK (exit 0)",
       "passed": true,
-      "evidence": "test/scenarios/results/U05"
+      "evidence": "test/scenarios/results/U05",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U05/ecdsa-p256-sha256.json --trust-store test/scenarios/results/U05/trust.json --package contoh-app --version 1.0.0 --json"
     },
     {
       "id": "U05",
@@ -122,7 +184,8 @@
       "expected": "INVALID_SIGNATURE (exit 1)",
       "actual": "INVALID_SIGNATURE (exit 1)",
       "passed": true,
-      "evidence": "test/scenarios/results/U05"
+      "evidence": "test/scenarios/results/U05",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U05/ecdsa-p256-sha256-bitflip.json --trust-store test/scenarios/results/U05/trust.json --package contoh-app --version 1.0.0 --json"
     },
     {
       "id": "U05",
@@ -131,7 +194,8 @@
       "expected": "OK (exit 0)",
       "actual": "OK (exit 0)",
       "passed": true,
-      "evidence": "test/scenarios/results/U05"
+      "evidence": "test/scenarios/results/U05",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U05/ed25519.json --trust-store test/scenarios/results/U05/trust.json --package contoh-app --version 1.0.0 --json"
     },
     {
       "id": "U05",
@@ -140,7 +204,8 @@
       "expected": "INVALID_SIGNATURE (exit 1)",
       "actual": "INVALID_SIGNATURE (exit 1)",
       "passed": true,
-      "evidence": "test/scenarios/results/U05"
+      "evidence": "test/scenarios/results/U05",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U05/ed25519-bitflip.json --trust-store test/scenarios/results/U05/trust.json --package contoh-app --version 1.0.0 --json"
     },
     {
       "id": "U06",
@@ -149,7 +214,8 @@
       "expected": "KEY_NOT_TRUSTED (exit 1)",
       "actual": "KEY_NOT_TRUSTED (exit 1)",
       "passed": true,
-      "evidence": "test/scenarios/results/U06"
+      "evidence": "test/scenarios/results/U06",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U06/bundle.json --trust-store test/scenarios/results/U06/trust-empty.json --package contoh-app --version 1.0.0 --json"
     },
     {
       "id": "U06",
@@ -158,7 +224,8 @@
       "expected": "OK (exit 0)",
       "actual": "OK (exit 0)",
       "passed": true,
-      "evidence": "test/scenarios/results/U06"
+      "evidence": "test/scenarios/results/U06",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U06/bundle.json --trust-store test/scenarios/results/U06/trust.json --package contoh-app --version 1.0.0 --json"
     },
     {
       "id": "U06",
@@ -167,7 +234,8 @@
       "expected": "KEY_NOT_TRUSTED (exit 1)",
       "actual": "KEY_NOT_TRUSTED (exit 1)",
       "passed": true,
-      "evidence": "test/scenarios/results/U06"
+      "evidence": "test/scenarios/results/U06",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U06/bundle.json --trust-store test/scenarios/results/U06/trust.json --package contoh-app --version 1.0.0 --json"
     },
     {
       "id": "U07",
@@ -176,7 +244,8 @@
       "expected": "KEY_NOT_TRUSTED (exit 1)",
       "actual": "KEY_NOT_TRUSTED (exit 1)",
       "passed": true,
-      "evidence": "test/scenarios/results/U07"
+      "evidence": "test/scenarios/results/U07",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U07/bundle.json --trust-store test/scenarios/results/U07/trust.json --package contoh-app --version 1.0.0 --json"
     },
     {
       "id": "U07",
@@ -185,7 +254,88 @@
       "expected": "OK (exit 0)",
       "actual": "OK (exit 0)",
       "passed": true,
-      "evidence": "test/scenarios/results/U07"
+      "evidence": "test/scenarios/results/U07",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U07/bundle.json --trust-store test/scenarios/results/U07/trust.json --package contoh-app --version 1.0.0 --json"
+    },
+    {
+      "id": "U08",
+      "profile": "ed25519",
+      "description": "Kontrol: versi sama dengan manifest (1.0.0)",
+      "expected": "OK (exit 0)",
+      "actual": "OK (exit 0)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U08",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U08/bundle.json --trust-store test/scenarios/results/U08/trust.json --package contoh-app --version 1.0.0 --json"
+    },
+    {
+      "id": "U08",
+      "profile": "ed25519",
+      "description": "Bundle sah, paket sesuai, versi pengguna 2.0.0 berbeda dari manifest (1.0.0)",
+      "expected": "METADATA_MISMATCH (exit 1)",
+      "actual": "METADATA_MISMATCH (exit 1)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U08",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U08/bundle.json --trust-store test/scenarios/results/U08/trust.json --package contoh-app --version 2.0.0 --json"
+    },
+    {
+      "id": "U09",
+      "profile": "ed25519",
+      "description": "Kontrol: nama berkas sama dengan manifest",
+      "expected": "OK (exit 0)",
+      "actual": "OK (exit 0)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U09",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U09/bundle.json --trust-store test/scenarios/results/U09/trust.json --package contoh-app --version 1.0.0 --json"
+    },
+    {
+      "id": "U09",
+      "profile": "ed25519",
+      "description": "Nama berkas diubah menjadi `contoh-app-renamed.bin`, isi tidak berubah",
+      "expected": "METADATA_MISMATCH (exit 1)",
+      "actual": "METADATA_MISMATCH (exit 1)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U09",
+      "command": "digisign verify --file test/scenarios/results/U09/nama-lain/contoh-app-renamed.bin --bundle test/scenarios/results/U09/bundle.json --trust-store test/scenarios/results/U09/trust.json --package contoh-app --version 1.0.0 --json"
+    },
+    {
+      "id": "U10",
+      "profile": "ed25519",
+      "description": "Field `schema` muncul dua kali di bundle",
+      "expected": "FORMAT_ERROR (exit 1)",
+      "actual": "FORMAT_ERROR (exit 1)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U10",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U10/bundle-duplikat.json --trust-store test/scenarios/results/U10/trust.json --package contoh-app --version 1.0.0 --json"
+    },
+    {
+      "id": "U10",
+      "profile": "ed25519",
+      "description": "`manifest_b64` bertipe angka, bukan string",
+      "expected": "FORMAT_ERROR (exit 1)",
+      "actual": "FORMAT_ERROR (exit 1)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U10",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U10/bundle-tipe-salah.json --trust-store test/scenarios/results/U10/trust.json --package contoh-app --version 1.0.0 --json"
+    },
+    {
+      "id": "U10",
+      "profile": "ed25519",
+      "description": "`signature_b64` = `QQ-_` (karakter di luar alfabet Base64)",
+      "expected": "FORMAT_ERROR (exit 1)",
+      "actual": "FORMAT_ERROR (exit 1)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U10",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U10/bundle-base64-salah.json --trust-store test/scenarios/results/U10/trust.json --package contoh-app --version 1.0.0 --json"
+    },
+    {
+      "id": "U10",
+      "profile": "ed25519",
+      "description": "Manifest 16385 byte, melebihi batas 16384 byte",
+      "expected": "FORMAT_ERROR (exit 1)",
+      "actual": "FORMAT_ERROR (exit 1)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U10",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U10/bundle-manifest-besar.json --trust-store test/scenarios/results/U10/trust.json --package contoh-app --version 1.0.0 --json"
     },
     {
       "id": "U11",
@@ -194,7 +344,8 @@
       "expected": "UNSUPPORTED_ALGORITHM (exit 1)",
       "actual": "UNSUPPORTED_ALGORITHM (exit 1)",
       "passed": true,
-      "evidence": "test/scenarios/results/U11"
+      "evidence": "test/scenarios/results/U11",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U11/bundle-ed448.json --trust-store test/scenarios/results/U11/trust.json --package contoh-app --version 1.0.0 --json"
     },
     {
       "id": "U11",
@@ -203,7 +354,8 @@
       "expected": "UNSUPPORTED_ALGORITHM (exit 1)",
       "actual": "UNSUPPORTED_ALGORITHM (exit 1)",
       "passed": true,
-      "evidence": "test/scenarios/results/U11"
+      "evidence": "test/scenarios/results/U11",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U11/bundle-rsa-pkcs1-sha256.json --trust-store test/scenarios/results/U11/trust.json --package contoh-app --version 1.0.0 --json"
     },
     {
       "id": "U11",
@@ -212,7 +364,8 @@
       "expected": "UNSUPPORTED_ALGORITHM (exit 1)",
       "actual": "UNSUPPORTED_ALGORITHM (exit 1)",
       "passed": true,
-      "evidence": "test/scenarios/results/U11"
+      "evidence": "test/scenarios/results/U11",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U11/bundle-ED25519.json --trust-store test/scenarios/results/U11/trust.json --package contoh-app --version 1.0.0 --json"
     },
     {
       "id": "U12",
@@ -221,7 +374,18 @@
       "expected": "KEY_NOT_TRUSTED (exit 1)",
       "actual": "KEY_NOT_TRUSTED (exit 1)",
       "passed": true,
-      "evidence": "test/scenarios/results/U12"
+      "evidence": "test/scenarios/results/U12",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U12/bundle-other-key.json --trust-store test/scenarios/results/U12/trust.json --package contoh-app --version 1.0.0 --json"
+    },
+    {
+      "id": "U13",
+      "profile": "ed25519",
+      "description": "Urutan field dan white space bundle diubah, Base64 tetap",
+      "expected": "OK (exit 0)",
+      "actual": "OK (exit 0)",
+      "passed": true,
+      "evidence": "test/scenarios/results/U13",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U13/bundle-urutan-whitespace.json --trust-store test/scenarios/results/U13/trust.json --package contoh-app --version 1.0.0 --json"
     },
     {
       "id": "U14",
@@ -230,7 +394,8 @@
       "expected": "manifest identik, signature berbeda",
       "actual": "manifest identik, signature berbeda",
       "passed": true,
-      "evidence": "test/scenarios/results/U14"
+      "evidence": "test/scenarios/results/U14",
+      "command": "-"
     },
     {
       "id": "U14",
@@ -239,7 +404,8 @@
       "expected": "OK (exit 0)",
       "actual": "OK (exit 0)",
       "passed": true,
-      "evidence": "test/scenarios/results/U14"
+      "evidence": "test/scenarios/results/U14",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U14/rsa-pss-sha256-1.json --trust-store test/scenarios/results/U14/trust.json --package contoh-app --version 1.0.0 --json"
     },
     {
       "id": "U14",
@@ -248,7 +414,8 @@
       "expected": "OK (exit 0)",
       "actual": "OK (exit 0)",
       "passed": true,
-      "evidence": "test/scenarios/results/U14"
+      "evidence": "test/scenarios/results/U14",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U14/rsa-pss-sha256-2.json --trust-store test/scenarios/results/U14/trust.json --package contoh-app --version 1.0.0 --json"
     },
     {
       "id": "U14",
@@ -257,7 +424,8 @@
       "expected": "manifest identik, signature berbeda",
       "actual": "manifest identik, signature berbeda",
       "passed": true,
-      "evidence": "test/scenarios/results/U14"
+      "evidence": "test/scenarios/results/U14",
+      "command": "-"
     },
     {
       "id": "U14",
@@ -266,7 +434,8 @@
       "expected": "OK (exit 0)",
       "actual": "OK (exit 0)",
       "passed": true,
-      "evidence": "test/scenarios/results/U14"
+      "evidence": "test/scenarios/results/U14",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U14/ecdsa-p256-sha256-1.json --trust-store test/scenarios/results/U14/trust.json --package contoh-app --version 1.0.0 --json"
     },
     {
       "id": "U14",
@@ -275,7 +444,8 @@
       "expected": "OK (exit 0)",
       "actual": "OK (exit 0)",
       "passed": true,
-      "evidence": "test/scenarios/results/U14"
+      "evidence": "test/scenarios/results/U14",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U14/ecdsa-p256-sha256-2.json --trust-store test/scenarios/results/U14/trust.json --package contoh-app --version 1.0.0 --json"
     },
     {
       "id": "U14",
@@ -284,7 +454,8 @@
       "expected": "manifest identik, signature identik",
       "actual": "manifest identik, signature identik",
       "passed": true,
-      "evidence": "test/scenarios/results/U14"
+      "evidence": "test/scenarios/results/U14",
+      "command": "-"
     },
     {
       "id": "U14",
@@ -293,7 +464,8 @@
       "expected": "OK (exit 0)",
       "actual": "OK (exit 0)",
       "passed": true,
-      "evidence": "test/scenarios/results/U14"
+      "evidence": "test/scenarios/results/U14",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U14/ed25519-1.json --trust-store test/scenarios/results/U14/trust.json --package contoh-app --version 1.0.0 --json"
     },
     {
       "id": "U14",
@@ -302,7 +474,8 @@
       "expected": "OK (exit 0)",
       "actual": "OK (exit 0)",
       "passed": true,
-      "evidence": "test/scenarios/results/U14"
+      "evidence": "test/scenarios/results/U14",
+      "command": "digisign verify --file test/scenarios/inputs/contoh-app.bin --bundle test/scenarios/results/U14/ed25519-2.json --trust-store test/scenarios/results/U14/trust.json --package contoh-app --version 1.0.0 --json"
     }
   ]
 }

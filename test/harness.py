@@ -54,11 +54,12 @@ class Run:
 
 
 class Recorder:
-    def __init__(self, log_path: str):
+    def __init__(self, log_path: str | None = None):
         self.log_path = log_path
-        os.makedirs(os.path.dirname(log_path), exist_ok=True)
-        with open(log_path, "w", encoding="utf-8", newline="\n") as f:
-            f.write(f"# Log perintah ({rel(log_path)})\n\n")
+        if log_path:
+            os.makedirs(os.path.dirname(log_path), exist_ok=True)
+            with open(log_path, "w", encoding="utf-8", newline="\n") as f:
+                f.write(f"# Log perintah ({rel(log_path)})\n\n")
 
     def cli(self, *args: str) -> Run:
         return self._run(["digisign", *args], [sys.executable, "-m", "src.main", *args])
@@ -76,13 +77,14 @@ class Recorder:
         )
         shown[0] = os.path.basename(shown[0])
         run = Run(" ".join(shlex.quote(a) for a in shown), proc.returncode, proc.stdout, proc.stderr)
-        with open(self.log_path, "a", encoding="utf-8", newline="\n") as f:
-            f.write(f"$ {run.command}\nexit: {run.code}\n")
-            if run.stdout:
-                f.write(f"[stdout]\n{run.stdout.rstrip()}\n")
-            if run.stderr:
-                f.write(f"[stderr]\n{run.stderr.rstrip()}\n")
-            f.write("\n")
+        if self.log_path:
+            with open(self.log_path, "a", encoding="utf-8", newline="\n") as f:
+                f.write(f"$ {run.command}\nexit: {run.code}\n")
+                if run.stdout:
+                    f.write(f"[stdout]\n{run.stdout.rstrip()}\n")
+                if run.stderr:
+                    f.write(f"[stderr]\n{run.stderr.rstrip()}\n")
+                f.write("\n")
         return run
 
 
@@ -101,6 +103,7 @@ class Case:
     actual: str
     passed: bool
     evidence: str
+    command: str = "-"
 
 
 @dataclass
@@ -108,8 +111,8 @@ class Report:
     title: str
     cases: list[Case] = field(default_factory=list)
 
-    def add(self, sid, profile, description, expected, actual, passed, evidence) -> None:
-        self.cases.append(Case(sid, profile, description, expected, actual, passed, evidence))
+    def add(self, sid, profile, description, expected, actual, passed, evidence, command="-") -> None:
+        self.cases.append(Case(sid, profile, description, expected, actual, passed, evidence, command))
 
     def add_verify(self, sid, profile, description, run: Run, expected_status: str, evidence: str) -> None:
         expected_exit = 0 if expected_status == "OK" else 1
@@ -119,48 +122,18 @@ class Report:
             f"{run.status} (exit {run.code})",
             run.status == expected_status and run.code == expected_exit,
             evidence,
+            run.command,
         )
 
     @property
     def passed(self) -> bool:
         return all(case.passed for case in self.cases)
 
-    def write(self, results_dir: str, how_to_run: str, extra_markdown: str = "") -> None:
-        env = environment()
+    def write(self, results_dir: str) -> None:
+        document = {"title": self.title, "environment": environment(), "cases": [asdict(c) for c in self.cases]}
         with open(os.path.join(results_dir, "results.json"), "w", encoding="utf-8", newline="\n") as f:
-            json.dump({"environment": env, "cases": [asdict(c) for c in self.cases]}, f, indent=2)
+            json.dump(document, f, indent=2)
             f.write("\n")
-
-        ok = sum(case.passed for case in self.cases)
-        lines = [
-            f"# {self.title}",
-            "",
-            f"**Ringkasan: {ok}/{len(self.cases)} kasus lulus.**",
-            "",
-            "## Cara menjalankan",
-            "",
-            "```",
-            how_to_run,
-            "```",
-            "",
-            "## Lingkungan",
-            "",
-            *(f"- {key}: {value}" for key, value in env.items()),
-            "",
-            "## Hasil",
-            "",
-            "| ID | Profil | Skenario | Diharapkan | Hasil | Status | Bukti |",
-            "|---|---|---|---|---|---|---|",
-        ]
-        for c in self.cases:
-            mark = "LULUS" if c.passed else "GAGAL"
-            lines.append(
-                f"| {c.id} | {c.profile} | {c.description} | {c.expected} | {c.actual} | {mark} | `{c.evidence}` |"
-            )
-        if extra_markdown:
-            lines += ["", extra_markdown.strip()]
-        with open(os.path.join(results_dir, "README.md"), "w", encoding="utf-8", newline="\n") as f:
-            f.write("\n".join(lines) + "\n")
 
 
 def environment() -> dict[str, str]:
