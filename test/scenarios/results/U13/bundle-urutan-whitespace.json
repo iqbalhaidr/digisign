@@ -1,0 +1,5 @@
+{ "signature_b64" :
+	"kL9XlPs16yPL7jWGv0qItADohkns+nDs7OHj3sXPwsmBxxb3d8pfIzEPwmyPmzQBf+SCk4qxGsekfEhKgcwcCg==" ,
+   "schema":"minisign-bundle/v1",
+
+  "manifest_b64"  :   "eyJzY2hlbWEiOiJtaW5pc2lnbi1tYW5pZmVzdC92MSIsInBhY2thZ2UiOiJjb250b2gtYXBwIiwidmVyc2lvbiI6IjEuMC4wIiwiYWxnb3JpdGhtIjoiZWQyNTUxOSIsImtleWlkIjoiMDBjMWViNDRkOWQ2Mzg4MzU2ZDg1NTc0ZjIzMzE0Nzk4YTU3MTA3ZDEwMGU5ZDg5ZjcxYzQ0MWRjNjI4MmMyNyIsImFydGlmYWN0Ijp7Im5hbWUiOiJjb250b2gtYXBwLmJpbiIsInNpemUiOjQwOTYsInNoYTI1NiI6ImM4ZjVkMDM0MWQ1NGQ5NTFhNzFiMTM2ZTZlMmFmY2IxNGQxMWVkODQ4OWE3YWUxMjZhOGZlZTBkZjZlY2YxOTMifX0="   }
