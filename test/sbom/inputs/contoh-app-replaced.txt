@@ -1,0 +1,2 @@
+Contoh aplikasi versi PALSU.
+Isi ini menggantikan artefak rilis asli untuk skenario penggantian artefak.

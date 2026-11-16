@@ -53,6 +53,20 @@
 
 {class}`~src.trust.store.TrustEntry`
 
+## SBOM
+| Field | Type | Value |
+| ----- | ---- | ------ |
+| `bomFormat` | string | `CycloneDX` |
+| `specVersion` | string | `1.4`, `1.5`, `1.6` (`sbom generate` writes `1.6`) |
+| `metadata.component` | object | The release artifact |
+| `metadata.component.name` | string | Must equal `--package` |
+| `metadata.component.version` | string | Must equal `--version` |
+| `metadata.component.hashes[]` | array of object | Exactly one `{"alg": "SHA-256", "content": <64 hex>}`, the release artifact SHA-256 |
+| `metadata.component.properties[]` | array of object | Optional; `digisign:artifact:name` must equal the artifact file name |
+| `components[]` | array of object | Optional; ZIP entries as `file` components with SHA-256 |
+
+{class}`~src.sbom.document.SbomDocument`
+
 ## Output `verify --json` 
 | Field | Type | Infomation |
 | ----- | ---- | ---------- |
@@ -64,6 +78,19 @@
 | `package` | string \| null | Read from manifest |
 | `version` | string \| null | Read from manifest |
 
+## Output `sbom check --json`
+| Field | Type | Infomation |
+| ----- | ---- | ---------- |
+| `valid` | boolean | `true` iff `status == "OK"` |
+| `status` | string | One of the `Verification status` |
+| `stage` | string \| null | Failed stage: `release`, `sbom`, `binding`; `null` on `OK` |
+| `message` | string | Short explanation |
+| `artifact_sha256` | string \| null | From the verified release manifest |
+| `release` | object \| null | Release bundle result, `verify --json` format |
+| `sbom` | object \| null | SBOM bundle result, `verify --json` format |
+
+{class}`~src.sbom.verify.SbomCheckResult`
+
 ## Verification status
 | Status | Exit code | Causes |
 | ------ | --------- | -------- |
@@ -74,11 +101,12 @@
 | `INVALID_SIGNATURE` | 1 | Wrong signature |
 | `METADATA_MISMATCH` | 1 | `--package`, `--version`, file name missmatch with manifest |
 | `ARTIFACT_MISMATCH` | 1 | size, sha256 missmatch with manifest |
+| `SBOM_MISMATCH` | 1 | `sbom check` only: SBOM SHA-256, package, version, or artifact name differs from the release |
 | `OK` | 0 | Pass all checks |
 
 ## Exit code
 | Exit code | Causes |
 | --------- | ---- |
 | `0` | Success |
-| `1` | `verify` denied |
+| `1` | `verify`, `sbom verify`, `sbom check` denied |
 | `2` | Invalid args, I/O error, other non-`verify` commands error |

@@ -1,0 +1,42 @@
+{
+  "title": "Hasil Skenario Uji Signed SBOM S01-S03",
+  "environment": {
+    "Waktu (UTC)": "2026-11-16 03:55:44",
+    "OS": "Linux-7.0.0-43-generic-x86_64-with-glibc2.39",
+    "Python": "3.12.3",
+    "cryptography": "50.0.2",
+    "OpenSSL CLI": "OpenSSL 3.0.13 30 Jan 2024 (Library: OpenSSL 3.0.13 30 Jan 2024)"
+  },
+  "cases": [
+    {
+      "id": "S01",
+      "profile": "ed25519",
+      "description": "Kontrol: rilis dan SBOM sah, SHA-256 pada SBOM sama dengan artefak rilis",
+      "expected": "OK, stage - (exit 0)",
+      "actual": "OK, stage - (exit 0)",
+      "passed": true,
+      "evidence": "test/sbom/results/S01",
+      "command": "digisign sbom check --file test/sbom/results/S01/contoh-app.zip --bundle test/sbom/results/S01/contoh-app.bundle.json --sbom test/sbom/results/S01/contoh-app.cdx.json --sbom-bundle test/sbom/results/S01/contoh-app.cdx.bundle.json --trust-store test/sbom/results/S01/trust.json --package contoh-app --version 1.0.0 --json"
+    },
+    {
+      "id": "S02",
+      "profile": "ed25519",
+      "description": "Isi SBOM diubah setelah ditandatangani: satu karakter SHA-256 komponen diganti, ukuran tetap",
+      "expected": "ARTIFACT_MISMATCH, stage sbom (exit 1)",
+      "actual": "ARTIFACT_MISMATCH, stage sbom (exit 1)",
+      "passed": true,
+      "evidence": "test/sbom/results/S02",
+      "command": "digisign sbom check --file test/sbom/results/S02/contoh-app.zip --bundle test/sbom/results/S02/contoh-app.bundle.json --sbom test/sbom/results/S02/diubah/contoh-app.cdx.json --sbom-bundle test/sbom/results/S02/contoh-app.cdx.bundle.json --trust-store test/sbom/results/S02/trust.json --package contoh-app --version 1.0.0 --json"
+    },
+    {
+      "id": "S03",
+      "profile": "ed25519",
+      "description": "Artefak rilis diganti dan ditandatangani ulang dengan kunci sah, SBOM lama tetap dipakai",
+      "expected": "SBOM_MISMATCH, stage binding (exit 1)",
+      "actual": "SBOM_MISMATCH, stage binding (exit 1)",
+      "passed": true,
+      "evidence": "test/sbom/results/S03",
+      "command": "digisign sbom check --file test/sbom/results/S03/diganti/contoh-app.zip --bundle test/sbom/results/S03/contoh-app-diganti.bundle.json --sbom test/sbom/results/S03/contoh-app.cdx.json --sbom-bundle test/sbom/results/S03/contoh-app.cdx.bundle.json --trust-store test/sbom/results/S03/trust.json --package contoh-app --version 1.0.0 --json"
+    }
+  ]
+}
