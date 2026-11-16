@@ -41,7 +41,7 @@ digisign adalah kakas penandatanganan dan verifikasi rilis perangkat lunak yang 
 ### Release Image
 | Version | Tag | Digest |
 | ----- | --- | ------ |
-| `v1.1.0` | ``1.1.0`` | ``sha256:`` |
+| `v1.1.0` | ``1.1.0`` | ``sha256:8191a25975d5ae221295dd5a18de6dd5fdd57481e10d5d42ffc465451c4cb27d`` |
 | ``v1.0.0`` | ``1.0.0`` | ``sha256:046d973f54c64d776252465c3a4c0da0c75bd2d32f1e20965a2c3fb4c8a0077a`` |
 
 ### Runner CI/CD
