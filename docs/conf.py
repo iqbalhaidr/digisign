@@ -6,7 +6,7 @@ sys.path.insert(0, os.path.abspath(".."))
 project = "digisign"
 author = "Muhammad Aufa Farabi, Joel Hotlan Haris Siahaan, Muhammad Iqbal Haidar"
 copyright = "2026, " + author
-release = "1.0.0"
+release = "1.1.0"
 version = release
 language = "en"
 

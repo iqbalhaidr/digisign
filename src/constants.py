@@ -7,7 +7,7 @@ string must match (no ``^``/``$`` anchors needed).
 import re
 
 #: Program version (shown by ``--version`` and recorded as the SBOM tool).
-PROGRAM_VERSION = "1.0.0"
+PROGRAM_VERSION = "1.1.0"
 
 #: Required value of the manifest ``schema`` field.
 MANIFEST_SCHEMA = "minisign-manifest/v1"
