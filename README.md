@@ -76,7 +76,7 @@ docker run --rm --network none --user "$(id -u):$(id -g)" \
 | --key | CI_SIGNING_KEY_RSA, CI_SIGNING_KEY_ECDSA, CI_SIGNING_KEY_ED25519 |
 | --trust-store | test/ci/trust.json |
 
-Last Workflow Run: [https://github.com/iqbalhaidr/digisign/actions/runs/](https://github.com/iqbalhaidr/digisign/actions/runs/)
+Last Workflow Run: [https://github.com/iqbalhaidr/digisign/actions/runs/43887348108](https://github.com/iqbalhaidr/digisign/actions/runs/43887348108)
 
 ## Run (Manual)
 ```bash

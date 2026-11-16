@@ -1,0 +1,16 @@
+usage: digisign [-h] [--version] {keygen,sign,verify,trust,sbom} ...
+
+Software Release Sign & Verify
+
+positional arguments:
+  {keygen,sign,verify,trust,sbom}
+    keygen              Generate cryptographic key pair
+    sign                Sign release artifact and create bundle
+    verify              Verify release artifact against bundle and trust store
+    trust               Manage trust store
+    sbom                Generate, sign, and verify SBOM bound to a release
+                        artifact
+
+options:
+  -h, --help            show this help message and exit
+  --version             show program's version number and exit
