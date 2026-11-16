@@ -1,63 +1,63 @@
 {
   "environment": {
-    "os": "Linux 7.0.0-42-generic (#42~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Mon Oct 19 14:43:01 UTC 2)",
+    "os": "Linux 7.0.0-43-generic (#43~24.04.1-Ubuntu SMP PREEMPT_DYNAMIC Sat Oct 31 06:52:47 UTC 2)",
     "arch": "x86_64",
     "cpu": "Intel(R) Core(TM) Ultra 7 155H",
     "cpu_cores": "22",
     "ram": "15.22 GiB",
     "python_version": "3.12.3",
-    "cryptography_version": "50.0.2"
+    "cryptography_version": "41.0.7"
   },
   "keygen_summary": {
     "rsa-pss-sha256": {
-      "median_ms": 99.38,
-      "p95_ms": 209.3334,
-      "min_ms": 48.8049,
-      "max_ms": 209.3334,
-      "mean_ms": 109.7756
+      "median_ms": 311.4836,
+      "p95_ms": 738.1296,
+      "min_ms": 96.6325,
+      "max_ms": 1345.045,
+      "mean_ms": 357.343
     },
     "ecdsa-p256-sha256": {
-      "median_ms": 20.7413,
-      "p95_ms": 21.023,
-      "min_ms": 20.4625,
-      "max_ms": 21.023,
-      "mean_ms": 20.7592
+      "median_ms": 0.0286,
+      "p95_ms": 0.0333,
+      "min_ms": 0.024,
+      "max_ms": 0.0334,
+      "mean_ms": 0.0281
     },
     "ed25519": {
-      "median_ms": 20.6621,
-      "p95_ms": 21.2799,
-      "min_ms": 20.5148,
-      "max_ms": 21.2799,
-      "mean_ms": 20.7859
+      "median_ms": 0.0294,
+      "p95_ms": 0.0318,
+      "min_ms": 0.0291,
+      "max_ms": 0.0323,
+      "mean_ms": 0.0296
     }
   },
   "hash_summary": {
     "small.zip": {
       "size": 902,
       "sha256": "5e2a9fc62468b5a9e343722ed6453eadbe9a8f0773cfec1f518b6fe977f31763",
-      "median_ms": 0.0113,
-      "p95_ms": 0.0127,
-      "min_ms": 0.0102,
-      "max_ms": 0.0166,
-      "mean_ms": 0.0114
+      "median_ms": 0.0043,
+      "p95_ms": 0.0049,
+      "min_ms": 0.0041,
+      "max_ms": 0.0085,
+      "mean_ms": 0.0044
     },
     "medium.zip": {
       "size": 25378,
       "sha256": "b4a2a966fffcdf84684060262032753c6dd09a5c0eee4b0a8fdc3899bc7c1810",
-      "median_ms": 0.0421,
-      "p95_ms": 0.0436,
-      "min_ms": 0.0359,
-      "max_ms": 0.0585,
-      "mean_ms": 0.041
+      "median_ms": 0.0156,
+      "p95_ms": 0.016,
+      "min_ms": 0.0153,
+      "max_ms": 0.0205,
+      "mean_ms": 0.0158
     },
     "big.zip": {
       "size": 4050704,
       "sha256": "759cc5716305cbc25b3e83c737dc23005f52aaba6d7a91dcdbacfaab53fb0f03",
-      "median_ms": 2.3106,
-      "p95_ms": 2.4008,
-      "min_ms": 2.2731,
-      "max_ms": 2.4329,
-      "mean_ms": 2.3262
+      "median_ms": 2.2792,
+      "p95_ms": 2.361,
+      "min_ms": 2.2695,
+      "max_ms": 2.362,
+      "mean_ms": 2.291
     }
   },
   "crypto_summary": [
@@ -66,90 +66,90 @@
       "algorithm": "rsa-pss-sha256",
       "manifest_bytes": 296,
       "signature_raw_bytes": 384,
-      "sign_median_ms": 1.2356,
-      "sign_p95_ms": 1.4601,
-      "verify_median_ms": 0.0356,
-      "verify_p95_ms": 0.0388
+      "sign_median_ms": 1.2702,
+      "sign_p95_ms": 1.5889,
+      "verify_median_ms": 0.0462,
+      "verify_p95_ms": 0.0531
     },
     {
       "artifact": "small.zip",
       "algorithm": "ecdsa-p256-sha256",
       "manifest_bytes": 299,
       "signature_raw_bytes": 64,
-      "sign_median_ms": 0.0201,
-      "sign_p95_ms": 0.0256,
-      "verify_median_ms": 0.054,
-      "verify_p95_ms": 0.0573
+      "sign_median_ms": 0.0254,
+      "sign_p95_ms": 0.0322,
+      "verify_median_ms": 0.057,
+      "verify_p95_ms": 0.0605
     },
     {
       "artifact": "small.zip",
       "algorithm": "ed25519",
       "manifest_bytes": 289,
       "signature_raw_bytes": 64,
-      "sign_median_ms": 0.0245,
-      "sign_p95_ms": 0.0283,
-      "verify_median_ms": 0.0723,
-      "verify_p95_ms": 0.074
+      "sign_median_ms": 0.0305,
+      "sign_p95_ms": 0.0326,
+      "verify_median_ms": 0.0767,
+      "verify_p95_ms": 0.0799
     },
     {
       "artifact": "medium.zip",
       "algorithm": "rsa-pss-sha256",
       "manifest_bytes": 299,
       "signature_raw_bytes": 384,
-      "sign_median_ms": 1.2312,
-      "sign_p95_ms": 1.2699,
-      "verify_median_ms": 0.0346,
-      "verify_p95_ms": 0.0354
+      "sign_median_ms": 1.2741,
+      "sign_p95_ms": 1.2888,
+      "verify_median_ms": 0.0457,
+      "verify_p95_ms": 0.0504
     },
     {
       "artifact": "medium.zip",
       "algorithm": "ecdsa-p256-sha256",
       "manifest_bytes": 302,
       "signature_raw_bytes": 64,
-      "sign_median_ms": 0.0208,
-      "sign_p95_ms": 0.0233,
-      "verify_median_ms": 0.0552,
-      "verify_p95_ms": 0.0582
+      "sign_median_ms": 0.025,
+      "sign_p95_ms": 0.0263,
+      "verify_median_ms": 0.0565,
+      "verify_p95_ms": 0.0608
     },
     {
       "artifact": "medium.zip",
       "algorithm": "ed25519",
       "manifest_bytes": 292,
       "signature_raw_bytes": 64,
-      "sign_median_ms": 0.0236,
-      "sign_p95_ms": 0.0241,
-      "verify_median_ms": 0.0704,
-      "verify_p95_ms": 0.0726
+      "sign_median_ms": 0.0302,
+      "sign_p95_ms": 0.032,
+      "verify_median_ms": 0.0749,
+      "verify_p95_ms": 0.0798
     },
     {
       "artifact": "big.zip",
       "algorithm": "rsa-pss-sha256",
       "manifest_bytes": 298,
       "signature_raw_bytes": 384,
-      "sign_median_ms": 1.2262,
-      "sign_p95_ms": 1.2315,
-      "verify_median_ms": 0.0333,
-      "verify_p95_ms": 0.0368
+      "sign_median_ms": 1.2691,
+      "sign_p95_ms": 1.2833,
+      "verify_median_ms": 0.0456,
+      "verify_p95_ms": 0.049
     },
     {
       "artifact": "big.zip",
       "algorithm": "ecdsa-p256-sha256",
       "manifest_bytes": 301,
       "signature_raw_bytes": 64,
-      "sign_median_ms": 0.0195,
-      "sign_p95_ms": 0.0199,
-      "verify_median_ms": 0.0527,
-      "verify_p95_ms": 0.0543
+      "sign_median_ms": 0.0241,
+      "sign_p95_ms": 0.0253,
+      "verify_median_ms": 0.0562,
+      "verify_p95_ms": 0.0583
     },
     {
       "artifact": "big.zip",
       "algorithm": "ed25519",
       "manifest_bytes": 291,
       "signature_raw_bytes": 64,
-      "sign_median_ms": 0.0235,
-      "sign_p95_ms": 0.0259,
-      "verify_median_ms": 0.0706,
-      "verify_p95_ms": 0.0856
+      "sign_median_ms": 0.0315,
+      "sign_p95_ms": 0.0468,
+      "verify_median_ms": 0.077,
+      "verify_p95_ms": 0.0837
     }
   ],
   "e2e_summary": [
@@ -157,64 +157,82 @@
       "artifact": "small.zip",
       "artifact_size_bytes": 902,
       "algorithm": "rsa-pss-sha256",
-      "e2e_median_ms": 90.9018,
-      "e2e_p95_ms": 92.051
+      "sign_e2e_median_ms": 110.3374,
+      "sign_e2e_p95_ms": 149.8373,
+      "verify_e2e_median_ms": 2.2968,
+      "verify_e2e_p95_ms": 2.512
     },
     {
       "artifact": "small.zip",
       "artifact_size_bytes": 902,
       "algorithm": "ecdsa-p256-sha256",
-      "e2e_median_ms": 5.7251,
-      "e2e_p95_ms": 6.2288
+      "sign_e2e_median_ms": 7.1345,
+      "sign_e2e_p95_ms": 7.4957,
+      "verify_e2e_median_ms": 2.0004,
+      "verify_e2e_p95_ms": 2.6538
     },
     {
       "artifact": "small.zip",
       "artifact_size_bytes": 902,
       "algorithm": "ed25519",
-      "e2e_median_ms": 5.6343,
-      "e2e_p95_ms": 5.8229
+      "sign_e2e_median_ms": 7.3149,
+      "sign_e2e_p95_ms": 7.9646,
+      "verify_e2e_median_ms": 2.6729,
+      "verify_e2e_p95_ms": 3.8499
     },
     {
       "artifact": "medium.zip",
       "artifact_size_bytes": 25378,
       "algorithm": "rsa-pss-sha256",
-      "e2e_median_ms": 91.0994,
-      "e2e_p95_ms": 92.1775
+      "sign_e2e_median_ms": 94.4758,
+      "sign_e2e_p95_ms": 135.2561,
+      "verify_e2e_median_ms": 2.0104,
+      "verify_e2e_p95_ms": 2.5018
     },
     {
       "artifact": "medium.zip",
       "artifact_size_bytes": 25378,
       "algorithm": "ecdsa-p256-sha256",
-      "e2e_median_ms": 5.5936,
-      "e2e_p95_ms": 5.8412
+      "sign_e2e_median_ms": 7.0717,
+      "sign_e2e_p95_ms": 7.7755,
+      "verify_e2e_median_ms": 1.9073,
+      "verify_e2e_p95_ms": 2.4219
     },
     {
       "artifact": "medium.zip",
       "artifact_size_bytes": 25378,
       "algorithm": "ed25519",
-      "e2e_median_ms": 5.6525,
-      "e2e_p95_ms": 5.8859
+      "sign_e2e_median_ms": 7.1424,
+      "sign_e2e_p95_ms": 7.6741,
+      "verify_e2e_median_ms": 2.21,
+      "verify_e2e_p95_ms": 2.7832
     },
     {
       "artifact": "big.zip",
       "artifact_size_bytes": 4050704,
       "algorithm": "rsa-pss-sha256",
-      "e2e_median_ms": 96.1474,
-      "e2e_p95_ms": 97.5926
+      "sign_e2e_median_ms": 101.1818,
+      "sign_e2e_p95_ms": 141.8234,
+      "verify_e2e_median_ms": 4.7963,
+      "verify_e2e_p95_ms": 6.7371
     },
     {
       "artifact": "big.zip",
       "artifact_size_bytes": 4050704,
       "algorithm": "ecdsa-p256-sha256",
-      "e2e_median_ms": 11.1746,
-      "e2e_p95_ms": 13.2809
+      "sign_e2e_median_ms": 10.7421,
+      "sign_e2e_p95_ms": 13.3088,
+      "verify_e2e_median_ms": 5.5582,
+      "verify_e2e_p95_ms": 8.7581
     },
     {
       "artifact": "big.zip",
       "artifact_size_bytes": 4050704,
       "algorithm": "ed25519",
-      "e2e_median_ms": 10.7608,
-      "e2e_p95_ms": 11.022
+      "sign_e2e_median_ms": 10.7166,
+      "sign_e2e_p95_ms": 11.0713,
+      "verify_e2e_median_ms": 5.5416,
+      "verify_e2e_p95_ms": 6.4609
     }
   ],
   "size_summary": {

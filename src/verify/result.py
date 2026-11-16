@@ -1,17 +1,7 @@
 """Verification statuses and their exit codes.
 
-========================= ========= ==================================================
-Status                    Exit code Meaning
-========================= ========= ==================================================
-``OK``                    0         Signature and artifact are valid
-``FORMAT_ERROR``          1         Malformed bundle, manifest, or trust store
-``UNSUPPORTED_ALGORITHM`` 1         Unknown manifest algorithm profile
-``KEY_NOT_TRUSTED``       1         Key is not trusted for the package
-``INVALID_SIGNATURE``     1         Signature does not match the manifest
-``METADATA_MISMATCH``     1         Package, version, or artifact name differs
-``ARTIFACT_MISMATCH``     1         Artifact size or SHA-256 differs
-``INPUT_ERROR``           2         Unreadable file or invalid CLI arguments
-========================= ========= ==================================================
+All possible verification statuses can be seen on :ref:`verification-status`.
+and exit codes on :ref:`exit-code`.
 """
 
 import json

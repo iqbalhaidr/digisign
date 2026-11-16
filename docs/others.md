@@ -91,6 +91,7 @@
 
 {class}`~src.sbom.verify.SbomCheckResult`
 
+(verification-status)=
 ## Verification status
 | Status | Exit code | Causes |
 | ------ | --------- | -------- |
@@ -104,9 +105,31 @@
 | `SBOM_MISMATCH` | 1 | `sbom check` only: SBOM SHA-256, package, version, or artifact name differs from the release |
 | `OK` | 0 | Pass all checks |
 
+(exit-code)=
 ## Exit code
 | Exit code | Causes |
 | --------- | ---- |
 | `0` | Success |
 | `1` | `verify`, `sbom verify`, `sbom check` denied |
 | `2` | Invalid args, I/O error, other non-`verify` commands error |
+
+## ``sbom`` subcommand parameter
+
+| Subcommand | Parameter | Output |
+|---|---|---|
+| `sbom generate` | `--file` | SBOM file |
+| | `--package` / `--version` |  | |
+| | `--out` |  | |
+| `sbom sign` | `--sbom` | SBOM bundle |
+| | `--file` |  | |
+| | `--package` / `--version` |  | |
+| | `--key` |  | |
+| | `--out` |  | |
+| `sbom verify` | `--sbom`, `--bundle`, `--trust-store` | Verification result status and exit code |
+| | `--package` / `--version` |  | |
+| | `--json` |  | |
+| `sbom check` | `--file`, `--bundle` | `sbom check` json verification result and exit code |
+| | `--sbom`, `--sbom-bundle` |  | |
+| | `--trust-store` |  | |
+| | `--package` / `--version` |  | |
+| | `--json` |  | |

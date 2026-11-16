@@ -6,23 +6,35 @@ digisign adalah kakas penandatanganan dan verifikasi rilis perangkat lunak yang 
 | Image registry | [https://github.com/iqbalhaidr/digisign/pkgs/container/digisign](https://github.com/iqbalhaidr/digisign/pkgs/container/digisign) |
 | API Documentation | [https://iqbalhaidr.github.io/digisign/](https://iqbalhaidr.github.io/digisign/) |
 
+<table>
+<tr>
+<td valign="top">
 
 ## Tech Stack
+
 | Category | Tech |
-|---|---|
+| :--- | :--- |
 | Language | Python |
 | Registry | GitHub Container Registry |
 | CI/CD | GitHub Actions |
 | Container | Docker |
 
+</td>
+<td valign="top">
+
 ## Dependency
+
 | Library | Version |
-|---|---|
+| :--- | :--- |
 | `cryptography` | 50.0.2 |
 | `sphinx` | 9.1.1 |
 | `furo` | 2025.12.19 |
 | `myst-parser` | 5.2.0 |
 | stdlib | Python 3.12 |
+
+</td>
+</tr>
+</table>
 
 ## Run (Runner CI/CD)
 
@@ -107,88 +119,7 @@ digisign sbom check --file contoh-app.zip --bundle release.json \
 ```
 
 ## Format 
-
-### Algorithm
-| Profile | Information | Signature |
-| ------ | ------------------ | --------- |
-| `rsa-pss-sha256` | **Key:** RSA 3072 bit, public exponent 65537; **Scheme:** RSASSA-PSS (SHA-256, MGF1-SHA-256); **Salt:** 32 byte | 384 byte |
-| `ecdsa-p256-sha256` | **Curve:** NIST P-256 / secp256r1; **Hash:** SHA-256; **Nonce:** CSPRNG/RFC 6979 | 64 byte |
-| `ed25519` | **Variant:** Ed25519 (PureEdDSA) RFC 8032 | 64 byte |
-
-### Key
-
-| File | Format |
-| ------ | ------ |
-| `<prefix>.key.pem` | `PKCS#8` |
-| `<prefix>.pub.pem` | `SubjectPublicKeyInfo (SPKI)` |
-
-### Manifest
-
-| Field | Type | Value |
-| ----- | ---- | ------ |
-| `schema` | string | `minisign-manifest/v1` |
-| `package` | string | `[a-z0-9][a-z0-9._-]{0,63}` |
-| `version` | string | `[A-Za-z0-9][A-Za-z0-9._+-]{0,63}` |
-| `algorithm` | string | `rsa-pss-sha256`, `ecdsa-p256-sha256`, `ed25519` |
-| `keyid` | string | 64 hex |
-| `artifact` | object | `name`, `size`, `sha256` |
-| `artifact.name` | string | `[A-Za-z0-9][A-Za-z0-9._-]{0,127}` |
-| `artifact.size` | integer | `0–9007199254740991` |
-| `artifact.sha256` | string | 64 hex |
-
-### Bundle
-
-| Field | Type | Value |
-| ----- | ---- | ------ |
-| `schema` | string | `minisign-bundle/v1` |
-| `manifest_b64` | string | Base64 RFC 4648 |
-| `signature_b64` | string | Base64 RFC 4648 |
-
-### Trust entry
-
-| Field | Type | Value |
-| ----- | ---- | ------ |
-| `schema` | string | `minisign-trust/v1` |
-| `keys` | array of object | Can be empty, `keyid` must be unique |
-| `keys[].keyid` | string | 64 hex, `public_key_pem` fingerprint |
-| `keys[].algorithm` | string | `rsa-pss-sha256`, `ecdsa-p256-sha256`, `ed25519` |
-| `keys[].public_key_pem` | string | `.pub.pem` |
-| `keys[].packages` | array of string | Can't empty, no duplicate, no wildcard (`* ? [ ]`) |
-
-### SBOM
-| Field | Type | Value |
-| ----- | ---- | ------ |
-| `bomFormat` | string | `CycloneDX` |
-| `specVersion` | string | `1.4`, `1.5`, `1.6` (`sbom generate` writes `1.6`) |
-| `metadata.component` | object | The release artifact |
-| `metadata.component.name` | string | Must equal `--package` |
-| `metadata.component.version` | string | Must equal `--version` |
-| `metadata.component.hashes[]` | array of object | Exactly one `{"alg": "SHA-256", "content": <64 hex>}`, the release artifact SHA-256 |
-| `metadata.component.properties[]` | array of object | Optional; `digisign:artifact:name` must equal the artifact file name |
-| `components[]` | array of object | Optional; ZIP entries as `file` components with SHA-256 |
-
-### Output `verify --json` 
-| Field | Type | Infomation |
-| ----- | ---- | ---------- |
-| `valid` | boolean | `true` iff `status == "OK"` |
-| `status` | string | One of the `Verification status` |
-| `message` | string | Short explanation |
-| `algorithm` | string \| null | One of the `Algorithm` profile |
-| `keyid` | string \| null | Read from manifest |
-| `package` | string \| null | Read from manifest |
-| `version` | string \| null | Read from manifest |
-
-### Output `sbom check --json`
-| Field | Type | Infomation |
-| ----- | ---- | ---------- |
-| `valid` | boolean | `true` iff `status == "OK"` |
-| `status` | string | One of the `Verification status` |
-| `stage` | string \| null | Failed stage: `release`, `sbom`, `binding`; `null` on `OK` |
-| `message` | string | Short explanation |
-| `artifact_sha256` | string \| null | From the verified release manifest |
-| `release` | object \| null | Release bundle result, `verify --json` format |
-| `sbom` | object \| null | SBOM bundle result, `verify --json` format |
-
+See all format used in this program: [API Documentation (https://iqbalhaidr.github.io/digisign/others.html#)](https://iqbalhaidr.github.io/digisign/others.html#)
 
 ## Testing
 | Test | Script |
@@ -199,8 +130,8 @@ digisign sbom check --file contoh-app.zip --bundle release.json \
 | C01–C05 | GitHub Actions **test** -> *Run workflow* |
 | Signed SBOM | `python test/sbom/run_sbom.py` |
 
-- `test/scenarios/keys/` berisi pasangan kunci **khusus pengujian**. 
-- `test/ci/keys/` berisi kunci publik demo pipeline. kunci privat disimpan sebagai GitHub Secrets.
+- `test/scenarios/keys/` contains keypairs **only for testing**. 
+- `test/ci/keys/` contains public keys for pipeline demo. Private keys stored in GitHub Secrets.
 
 ## Contributor
 | NIM | Name | 

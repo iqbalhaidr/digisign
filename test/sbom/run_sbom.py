@@ -1,9 +1,6 @@
-# Skenario uji Signed SBOM melalui CLI (`sbom check --json`).
-#
-# Skenario:
-#   S01  Kontrol: artefak rilis, bundle rilis, SBOM, dan bundle SBOM sah
-#   S02  Isi SBOM diubah setelah ditandatangani
-#   S03  Artefak rilis diganti dan ditandatangani ulang, SBOM lama tetap dipakai
+# S01: artefak rilis, bundle rilis, SBOM, dan bundle SBOM sah
+# S02: Isi SBOM diubah setelah ditandatangani
+# S03: Artefak rilis diganti dan ditandatangani ulang, SBOM lama tetap dipakai
 
 import os
 import shutil
@@ -37,7 +34,6 @@ def make_zip(path: str, source: str) -> str:
 
 
 class Release:
-    """Satu rilis sah: trust store, artefak ZIP, bundle rilis, SBOM, dan bundle SBOM."""
 
     def __init__(self, sid: str, report: Report):
         self.sid = sid
@@ -85,30 +81,30 @@ class Release:
 
 def s01(report: Report) -> None:
     r = Release("S01", report)
-    r.check("Kontrol: rilis dan SBOM sah, SHA-256 pada SBOM sama dengan artefak rilis", "OK", None)
+    r.check("sha256 sbom sama dengan artefak", "OK", None)
 
 
 def s02(report: Report) -> None:
     r = Release("S02", report)
     with open(os.path.join(REPO_ROOT, r.sbom), encoding="ascii") as f:
         text = f.read()
-    old = text.split('"content": "', 2)[2][:64]  # SHA-256 entri pertama `components`
+    old = text.split('"content": "', 2)[2][:64] 
     new = ("0" if old[0] != "0" else "1") + old[1:]
-    tampered = os.path.join(r.dir, "diubah", "contoh-app.cdx.json")
+    tampered = os.path.join(r.dir, "replaced", "contoh-app.cdx.json")
     os.makedirs(os.path.dirname(tampered), exist_ok=True)
     with open(tampered, "w", encoding="ascii", newline="\n") as f:
         f.write(text.replace(old, new, 1))
-    r.check("Isi SBOM diubah setelah ditandatangani: satu karakter SHA-256 komponen diganti, ukuran tetap",
+    r.check("Isi SBOM diubah setelah ditandatangani",
             "ARTIFACT_MISMATCH", "sbom", sbom=rel(tampered))
 
 
 def s03(report: Report) -> None:
     r = Release("S03", report)
-    replaced = make_zip(os.path.join(r.dir, "diganti", "contoh-app.zip"),
+    replaced = make_zip(os.path.join(r.dir, "replaced", "contoh-app.zip"),
                         os.path.join(INPUTS_DIR, "contoh-app-replaced.txt"))
-    bundle = r.path("contoh-app-diganti.bundle.json")
+    bundle = r.path("contoh-app-replaced.bundle.json")
     r.sign(replaced, bundle)
-    r.check("Artefak rilis diganti dan ditandatangani ulang dengan kunci sah, SBOM lama tetap dipakai",
+    r.check("Artefak rilis diganti dan ditandatangani ulang, SBOM lama tetap dipakai",
             "SBOM_MISMATCH", "binding", artifact=replaced, bundle=bundle)
 
 
@@ -117,7 +113,7 @@ def main() -> int:
         shutil.rmtree(RESULTS_DIR, ignore_errors=True)
     os.makedirs(RESULTS_DIR, exist_ok=True)
 
-    report = Report("Hasil Skenario Uji Signed SBOM S01-S03")
+    report = Report("Uji sbom")
     for scenario in (s01, s02, s03):
         sid = scenario.__name__.upper()
         try:
@@ -130,7 +126,7 @@ def main() -> int:
     for case in report.cases:
         if not case.passed:
             print(f"[GAGAL] {case.id} {case.profile}: {case.description} -> {case.actual}")
-    print(f"{sum(c.passed for c in report.cases)}/{len(report.cases)} kasus lulus. Hasil: {rel(RESULTS_DIR)}/results.json")
+    print(f"{sum(c.passed for c in report.cases)}/{len(report.cases)} PASS. Result: {rel(RESULTS_DIR)}/results.json")
     return 0 if report.passed else 1
 
 
