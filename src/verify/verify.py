@@ -76,6 +76,30 @@ def verify_release(
         >>> r.status, r.exit_code
         ('OK', 0)
     """
+    return verify_release_detailed(file_path, bundle_path, trust_store_path, package, version)[0]
+
+def verify_release_detailed(
+    file_path: str,
+    bundle_path: str,
+    trust_store_path: str,
+    package: str,
+    version: str,
+) -> tuple[VerifyResult, Manifest | None]:
+    """Same as :func:`verify_release`, also returning the verified manifest.
+
+    Used by :mod:`src.sbom` to read the manifest without re-parsing the bundle.
+
+    Args:
+        file_path (str): Release artifact path.
+        bundle_path (str): Bundle path.
+        trust_store_path (str): Trust store path.
+        package (str): Expected package name.
+        version (str): Expected version.
+
+    Returns:
+        tuple[VerifyResult, Manifest | None]: Verification result and the
+        manifest (``None`` unless the status is ``OK``).
+    """
 
     # 1. INPUT_ERROR
     try:
@@ -84,56 +108,56 @@ def verify_release(
         with open(file_path, "rb"):
             pass
     except OSError as e:
-        return _result(INPUT_ERROR, f"cannot read input: {e}")
+        return _result(INPUT_ERROR, f"cannot read input: {e}"), None
 
     # 2. FORMAT_ERROR
     try:
         bundle = parse_bundle(bundle_bytes)
         manifest = parse_manifest(bundle.manifest_bytes)
     except FormatError as e:
-        return _result(FORMAT_ERROR, str(e))
+        return _result(FORMAT_ERROR, str(e)), None
     try:
         store = parse_trust_store(trust_bytes)
     except FormatError as e:
-        return _result(FORMAT_ERROR, f"trust store: {e}", manifest)
+        return _result(FORMAT_ERROR, f"trust store: {e}", manifest), None
 
     # 3. UNSUPPORTED_ALGORITHM
     if not is_supported(manifest.algorithm):
-        return _result(UNSUPPORTED_ALGORITHM, f"unsupported algorithm: {manifest.algorithm!r}", manifest)
+        return _result(UNSUPPORTED_ALGORITHM, f"unsupported algorithm: {manifest.algorithm!r}", manifest), None
 
     # 4. KEY_NOT_TRUSTED
     entry = store.find(manifest.keyid)
     if entry is None:
-        return _result(KEY_NOT_TRUSTED, "keyid is not in the trust store", manifest)
+        return _result(KEY_NOT_TRUSTED, "keyid is not in the trust store", manifest), None
     if entry.algorithm != manifest.algorithm:
-        return _result(KEY_NOT_TRUSTED, "trusted key profile differs from the manifest algorithm", manifest)
+        return _result(KEY_NOT_TRUSTED, "trusted key profile differs from the manifest algorithm", manifest), None
     if not entry.allows(package):
-        return _result(KEY_NOT_TRUSTED, f"key is not allowed for package {package!r}", manifest)
+        return _result(KEY_NOT_TRUSTED, f"key is not allowed for package {package!r}", manifest), None
     
     # 5. INVALID_SIGNATURE
     if not verify_signature(entry.public_key, manifest.algorithm, bundle.manifest_bytes, bundle.signature):
-        return _result(INVALID_SIGNATURE, "signature does not match the manifest", manifest)
+        return _result(INVALID_SIGNATURE, "signature does not match the manifest", manifest), None
 
     # 6. METADATA_MISMATCH
     if manifest.package != package:
-        return _result(METADATA_MISMATCH, f"package mismatch: manifest has {manifest.package!r}", manifest)
+        return _result(METADATA_MISMATCH, f"package mismatch: manifest has {manifest.package!r}", manifest), None
     if manifest.version != version:
-        return _result(METADATA_MISMATCH, f"version mismatch: manifest has {manifest.version!r}", manifest)
+        return _result(METADATA_MISMATCH, f"version mismatch: manifest has {manifest.version!r}", manifest), None
     if manifest.artifact.name != os.path.basename(file_path):
-        return _result(METADATA_MISMATCH, f"artifact name mismatch: manifest has {manifest.artifact.name!r}", manifest)
+        return _result(METADATA_MISMATCH, f"artifact name mismatch: manifest has {manifest.artifact.name!r}", manifest), None
 
     # 7. ARTIFACT_MISMATCH
     try:
         size, sha256 = hash_file(file_path)
     except OSError as e:
-        return _result(INPUT_ERROR, f"cannot read artifact: {e}", manifest)
+        return _result(INPUT_ERROR, f"cannot read artifact: {e}", manifest), None
     if size != manifest.artifact.size:
-        return _result(ARTIFACT_MISMATCH, "artifact size differs from the manifest", manifest)
+        return _result(ARTIFACT_MISMATCH, "artifact size differs from the manifest", manifest), None
     if sha256 != manifest.artifact.sha256:
-        return _result(ARTIFACT_MISMATCH, "artifact SHA-256 differs from the manifest", manifest)
+        return _result(ARTIFACT_MISMATCH, "artifact SHA-256 differs from the manifest", manifest), None
 
     # 8. OK
-    return _result(OK, "Signature and artifact are valid.", manifest)
+    return _result(OK, "Signature and artifact are valid.", manifest), manifest
 
 def verify_command(
     file_path: str,

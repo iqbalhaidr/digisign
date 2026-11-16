@@ -90,3 +90,49 @@ print(result.status, result.message, result.exit_code)
 digisign verify --file contoh-app.zip --bundle contoh-app.bundle.json \
                 --trust-store trust.json --package contoh-app --version 1.0.0 --json
 ```
+
+## Signed SBOM
+
+```python
+from src.sbom import check_sbom, sbom_generate_command, sbom_sign_command
+
+sbom_generate_command("contoh-app.zip", "contoh-app", "1.0.0", "contoh-app.cdx.json")
+# sbom:       contoh-app.cdx.json
+# component:  contoh-app 1.0.0
+# sha256:     xxxxx...
+# components: 1
+
+sbom_sign_command(
+    sbom_path="contoh-app.cdx.json",
+    file_path="contoh-app.zip",
+    package="contoh-app",
+    version="1.0.0",
+    key_path="keys/release.key.pem",
+    out_path="contoh-app.cdx.bundle.json",
+)
+
+result = check_sbom(
+    file_path="contoh-app.zip",
+    bundle_path="contoh-app.bundle.json",
+    sbom_path="contoh-app.cdx.json",
+    sbom_bundle_path="contoh-app.cdx.bundle.json",
+    trust_store_path="trust.json",
+    package="contoh-app",
+    version="1.0.0",
+)
+
+print(result.status, result.stage, result.message, result.exit_code)
+```
+{func}`~src.sbom.commands.sbom_generate_command`, {func}`~src.sbom.commands.sbom_sign_command`, {func}`~src.sbom.verify.check_sbom`
+
+`cli`:
+```bash
+digisign sbom generate --file contoh-app.zip --package contoh-app --version 1.0.0 --out contoh-app.cdx.json
+digisign sbom sign --sbom contoh-app.cdx.json --file contoh-app.zip --package contoh-app --version 1.0.0 \
+                   --key keys/release.key.pem --out contoh-app.cdx.bundle.json
+digisign sbom verify --sbom contoh-app.cdx.json --bundle contoh-app.cdx.bundle.json \
+                     --trust-store trust.json --package contoh-app --version 1.0.0 --json
+digisign sbom check --file contoh-app.zip --bundle contoh-app.bundle.json \
+                    --sbom contoh-app.cdx.json --sbom-bundle contoh-app.cdx.bundle.json \
+                    --trust-store trust.json --package contoh-app --version 1.0.0 --json
+```

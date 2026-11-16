@@ -1,0 +1,59 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "serialNumber": "urn:uuid:79b22629-fc83-4aab-af9c-65fe3ba11df1",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-11-16T03:55:43Z",
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "name": "digisign",
+          "version": "1.0.0"
+        }
+      ]
+    },
+    "component": {
+      "type": "application",
+      "bom-ref": "pkg:generic/contoh-app@1.0.0",
+      "name": "contoh-app",
+      "version": "1.0.0",
+      "purl": "pkg:generic/contoh-app@1.0.0",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "c01e044e9b5abf9070292368e7eecb71c4bb5c9b4cb17a9f3692fe2d12b99482"
+        }
+      ],
+      "properties": [
+        {
+          "name": "digisign:artifact:name",
+          "value": "contoh-app.zip"
+        },
+        {
+          "name": "digisign:artifact:size",
+          "value": "255"
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "type": "file",
+      "name": "contoh-app.txt",
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "0d1c9e8369f39548534fe6ba0033f0dfe11d183000b51bfd3344ec562bd92f3d"
+        }
+      ],
+      "properties": [
+        {
+          "name": "digisign:file:size",
+          "value": "176"
+        }
+      ]
+    }
+  ]
+}

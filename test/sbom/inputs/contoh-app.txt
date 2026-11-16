@@ -1,0 +1,2 @@
+Berkas ini merupakan perumpamaan input pada proses build yang menghasilkan artifact untuk kemudian dilakukan signing oleh program.
+Digunakan hanya untuk tujuan pengujian SBOM.
