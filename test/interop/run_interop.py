@@ -191,17 +191,6 @@ def main() -> int:
         except SetupError as e:
             report.add("-", profile, "Persiapan", "persiapan berhasil", str(e), False, rel(RESULTS_DIR))
 
-    # Keterangan:
-    # - I1: kunci dibangkitkan `openssl genpkey` (PKCS#8 PEM), dibaca program melalui `trust add`.
-    #   keyid pembanding dihitung OpenSSL: `openssl pkey -pubout -outform DER | openssl dgst -sha256`.
-    # - I2: kunci dari `keygen` dibaca `openssl pkey`; keyid dihitung OpenSSL dari DER SPKI hasil ekspornya.
-    # - I3: manifest M dan tanda tangan diambil dari bundle hasil `sign`, lalu diverifikasi:
-    #   - RSA-PSS: `openssl dgst -sha256 -sigopt rsa_padding_mode:pss -sigopt rsa_pss_saltlen:32 -sigopt rsa_mgf1_md:sha256 -verify`
-    #   - ECDSA: tanda tangan r||s (64 byte) diubah ke ASN.1 DER, lalu `openssl dgst -sha256 -verify`
-    #   - Ed25519: `openssl pkeyutl -verify -rawin` (pesan mentah, tanpa pre-hash)
-    # - I4: OpenSSL menandatangani M yang sama dengan perintah setara; untuk ECDSA keluaran DER diubah ke r||s.
-    #   Bundle dirakit skrip ini, lalu diverifikasi dengan `verify --json`.
-    # - Konversi DER <-> r||s dan pembentukan bundle ditulis ulang di skrip ini, tidak memakai kode program.
     report.write(RESULTS_DIR)
 
     for case in report.cases:
